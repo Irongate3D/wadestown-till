@@ -262,11 +262,18 @@
             <div id="pin-change-msg" style="font-size:12px;color:var(--accent2)"></div>
           </div>
         </div>  
-        <h3>Printer IP</h3>
+        <h3>Receipt Printing</h3>
         <div id="printer-config">
-          <input type="text" id="printer-ip" placeholder="192.168.1.xxx">
-          <button id="save-printer" onclick="savePrinterIp()">Save</button>
-          <div style="font-size:11px;color:var(--text2);margin-top:8px">Enter your Star TSP143 IP address. Find it by printing a self-test (hold FEED on printer while powering on).</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.6">
+            Printing uses <strong style="color:var(--accent)">Star PassPRNT</strong> — a free app that bridges the till to the Star TSP100III.<br><br>
+            <strong style="color:var(--text)">One-time setup:</strong><br>
+            1. Install <em>PassPRNT</em> from the App Store on this iPad<br>
+            2. Open PassPRNT → tap <em>Configuration</em><br>
+            3. Set <em>Printer</em> to <strong>TSP100IIILAN</strong><br>
+            4. Set <em>Port</em> to <strong>TCP:192.168.1.3</strong><br>
+            5. Tap <em>Save</em> — done<br><br>
+            When Print Receipt is toggled on, tapping <em>Done — Paid</em> will open PassPRNT, print, then return here automatically.
+          </div>
         </div>
       </div>
       <div class="admin-section">
@@ -321,14 +328,12 @@ let activeOrderIdx = 0;
 let pendingItem = null;
 let selectedMods = [];
 let payMethod = '';
-let printerIp = localStorage.getItem('printer_ip') || '';
 
 // ─── INIT ────────────────────────────────────────────────────────────────────
 function init() {
   // Load saved menu from localStorage if exists
   const saved = localStorage.getItem('sfizio_menu');
   if (saved) { try { menu = JSON.parse(saved); } catch(e){} }
-  printerIp = localStorage.getItem('printer_ip') || '';
   renderTabs();
   renderMenu();
   renderOrderPanel();
@@ -549,81 +554,69 @@ function completePay() {
 }
 
 // ─── PRINTING ────────────────────────────────────────────────────────────────
-async function printReceipt(order, total, method) {
+function printReceipt(order, total, method) {
   const gst = total * GST_RATE / (1 + GST_RATE);
   const now = new Date();
   const dateStr = now.toLocaleDateString('en-NZ',{day:'2-digit',month:'short',year:'numeric'}) + ', ' + now.toLocaleTimeString('en-NZ',{hour:'2-digit',minute:'2-digit'});
   const orderNum = Date.now().toString().slice(-6);
 
-  // Build ESC/POS receipt text
-  let lines = [];
-  lines.push({ type:'center', text: BUSINESS.name });
-  lines.push({ type:'center', text: BUSINESS.phone });
-  lines.push({ type:'center', text: BUSINESS.address });
-  lines.push({ type:'center', text: 'GST ' + BUSINESS.gst });
-  lines.push({ type:'divider' });
-  lines.push({ type:'center', text: dateStr });
-  lines.push({ type:'center', text: 'Order #' + orderNum });
-  if (order.name && order.name !== 'Tab 1') lines.push({ type:'center', text: order.name });
-  lines.push({ type:'divider' });
+  // Build receipt as HTML for PassPRNT
+  // PassPRNT renders HTML and sends it to the Star printer — no CORS, no mixed content issues
+  let rows = '';
   order.items.forEach(i => {
-    lines.push({ type:'item', left: i.item.button_name, right: '$'+i.price.toFixed(2) });
+    rows += `<tr><td style="text-align:left">${i.item.button_name}</td><td style="text-align:right">$${i.price.toFixed(2)}</td></tr>`;
     if (i.mods.length) {
       i.mods.filter(m=>m.name).forEach(m => {
-        lines.push({ type:'item', left: '  '+m.name, right: m.price>0?'+$'+m.price.toFixed(2):'' });
+        rows += `<tr><td style="text-align:left;padding-left:12px;font-size:11px">${m.name}</td><td style="text-align:right;font-size:11px">${m.price>0?'+$'+m.price.toFixed(2):''}</td></tr>`;
       });
     }
   });
-  lines.push({ type:'divider' });
-  lines.push({ type:'item', left:'Total', right:'$'+total.toFixed(2) });
-  lines.push({ type:'small', text: 'Includes GST of $'+gst.toFixed(2) });
-  lines.push({ type:'item', left: method==='card'?'Card Payment':'Cash Payment', right:'$'+total.toFixed(2) });
-  lines.push({ type:'divider' });
-  lines.push({ type:'center', text: 'Thank you!' });
-  lines.push({ type:'feed' });
 
-  if (!printerIp) {
-    console.log('No printer IP set — receipt:', lines);
-    alert('Printer IP not set. Go to Admin to configure.');
-    return;
-  }
+  const tabName = (order.name && order.name !== 'Tab 1') ? `<p>${order.name}</p>` : '';
 
-  // Star TSP100 supports direct TCP printing on port 9100
-  // We use a simple fetch to a local proxy or direct connection
-  // For iOS PWA, we need to connect to the printer via HTTP
-  // Star CloudPRNT or direct socket — use the Star WebPRNT approach
-  try {
-    const esc = buildEscPos(lines);
-    const response = await fetch(`http://${printerIp}/WebPRNT/SendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: btoa(esc) })
-    });
-    if (!response.ok) throw new Error('Print failed');
-  } catch(e) {
-    // Fallback: show receipt in alert for now
-    console.warn('Print error:', e);
-    const receiptText = lines.map(l => {
-      if (l.type==='divider') return '--------------------------------';
-      if (l.type==='center'||l.type==='small') return l.text.padStart(16+Math.floor(l.text.length/2));
-      if (l.type==='item') return l.left.padEnd(24) + (l.right||'').padStart(8);
-      return '';
-    }).join('\n');
-    console.log('RECEIPT:\n'+receiptText);
-  }
-}
+  const receiptHtml = `<html><head>
+<meta name="format-detection" content="telephone=no">
+<style>
+  body { font-family: monospace; font-size: 13px; width: 72mm; margin: 0; padding: 4px; }
+  h2 { font-size: 14px; text-align: center; margin: 2px 0; }
+  p { text-align: center; margin: 1px 0; font-size: 12px; }
+  hr { border: none; border-top: 1px dashed #000; margin: 4px 0; }
+  table { width: 100%; border-collapse: collapse; }
+  td { padding: 1px 2px; }
+  .total-row td { font-weight: bold; border-top: 1px dashed #000; padding-top: 3px; }
+  .gst-row td { font-size: 11px; }
+  .thanks { text-align: center; margin-top: 6px; font-size: 12px; }
+</style>
+</head><body>
+<h2>${BUSINESS.name}</h2>
+<p>${BUSINESS.phone}</p>
+<p>${BUSINESS.address}</p>
+<p>GST ${BUSINESS.gst}</p>
+<hr>
+<p>${dateStr}</p>
+<p>Order #${orderNum}</p>
+${tabName}
+<hr>
+<table>
+${rows}
+<tr class="total-row"><td>Total</td><td style="text-align:right">$${total.toFixed(2)}</td></tr>
+<tr class="gst-row"><td colspan="2" style="text-align:center">Includes GST of $${gst.toFixed(2)}</td></tr>
+<tr><td>${method==='card'?'Card Payment':'Cash Payment'}</td><td style="text-align:right">$${total.toFixed(2)}</td></tr>
+</table>
+<hr>
+<p class="thanks">Thank you!</p>
+</body></html>`;
 
-function buildEscPos(lines) {
-  // ESC/POS command builder — returns string for Star TSP100
-  let out = '\x1b\x40'; // init
-  lines.forEach(l => {
-    if (l.type==='divider') { out += '--------------------------------\n'; }
-    else if (l.type==='center') { out += '\x1b\x61\x01'+l.text+'\n'; }
-    else if (l.type==='small') { out += '\x1b\x61\x01\x1b\x4d\x01'+l.text+'\n\x1b\x4d\x00'; }
-    else if (l.type==='item') { out += '\x1b\x61\x00'+(l.left||'').padEnd(24)+(l.right||'').padStart(8)+'\n'; }
-    else if (l.type==='feed') { out += '\n\n\n\x1d\x56\x42\x00'; } // cut
-  });
-  return out;
+  // PassPRNT URL scheme — opens Star PassPRNT app on iPad/iPhone,
+  // prints to the configured Star printer, then returns to the till.
+  // PassPRNT must be installed (free on App Store) and configured with
+  // the printer port (e.g. TCP:192.168.1.92 for LAN, or bt: for Bluetooth).
+  const passprntUrl = 'starpassprnt://v1/print/nopreview?'
+    + 'back=' + encodeURIComponent(window.location.href)
+    + '&html=' + encodeURIComponent(receiptHtml)
+    + '&size=576';  // 72mm / 576 dots — correct for TSP100III
+
+  window.location.href = passprntUrl;
 }
 
 // ─── ADMIN ───────────────────────────────────────────────────────────────────
@@ -633,7 +626,6 @@ function openAdmin() {
   document.getElementById('admin-content').classList.remove('visible');
   document.getElementById('pin-input').value = '';
   document.getElementById('pin-error').textContent = '';
-  document.getElementById('printer-ip').value = printerIp;
 }
 
 function closeAdmin() {
@@ -652,12 +644,6 @@ function checkPin(val) {
       document.getElementById('pin-input').value = '';
     }
   }
-}
-
-function savePrinterIp() {
-  printerIp = document.getElementById('printer-ip').value.trim();
-  localStorage.setItem('printer_ip', printerIp);
-  alert('Printer IP saved: ' + printerIp);
 }
 
 function renderAdminItems() {
