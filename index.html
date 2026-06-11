@@ -270,7 +270,7 @@
             1. Install <em>PassPRNT</em> from the App Store on this iPad<br>
             2. Open PassPRNT → tap <em>Configuration</em><br>
             3. Set <em>Printer</em> to <strong>TSP100IIILAN</strong><br>
-            4. Set <em>Port</em> to <strong>TCP:192.168.1.3</strong><br>
+            4. Set <em>Port</em> to <strong>TCP:192.168.1.2</strong><br>
             5. Tap <em>Save</em> — done<br><br>
             When Print Receipt is toggled on, tapping <em>Done — Paid</em> will open PassPRNT, print, then return here automatically.
           </div>
@@ -610,8 +610,9 @@ ${rows}
   // PassPRNT URL scheme — opens Star PassPRNT app on iPad/iPhone,
   // prints to the configured Star printer, then returns to the till.
   // PassPRNT must be installed (free on App Store) and configured with
-  // the printer port (e.g. TCP:192.168.1.92 for LAN, or bt: for Bluetooth).
+  // the printer port (e.g. TCP:192.168.1.2 for LAN, or bt: for Bluetooth).
   const passprntUrl = 'starpassprnt://v1/print/nopreview?'
+    + 'port=' + encodeURIComponent('TCP:192.168.1.2')
     + 'back=' + encodeURIComponent(window.location.href)
     + '&html=' + encodeURIComponent(receiptHtml)
     + '&size=576';  // 72mm / 576 dots — correct for TSP100III
