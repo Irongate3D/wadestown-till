@@ -6,522 +6,156 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Wadestown Till">
-<title>Wadestown Kitchen | Neon Glass POS (Resizable)</title>
+<title>Wadestown Kitchen</title>
 <style>
   :root {
-    --bg-dark: #0a0c12;
-    --glass-bg: rgba(20, 25, 40, 0.55);
-    --glass-bg-solid: rgba(18, 22, 35, 0.7);
-    --glass-border: rgba(0, 255, 255, 0.35);
-    --glass-border-strong: rgba(0, 255, 255, 0.7);
-    --neon-cyan: #0ff;
-    --neon-pink: #f0f;
-    --neon-lime: #0f6;
-    --neon-gold: #ffd966;
-    --text-glow: 0 0 5px #0ff, 0 0 10px rgba(0, 255, 255, 0.5);
-    --text-glow-pink: 0 0 5px #f0f, 0 0 12px rgba(255, 0, 255, 0.4);
-    --shadow-glass: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 0 0.5px rgba(0, 255, 255, 0.15);
-    --red-neon: #ff4d6d;
-    --order-w: 300px;   /* default width, can be resized */
+    --bg: #1a1a1a;
+    --surface: #242424;
+    --surface2: #2e2e2e;
+    --border: #3a3a3a;
+    --accent: #c8a96e;
+    --accent2: #8fbf82;
+    --text: #f0ece4;
+    --text2: #a09888;
+    --red: #d45f5f;
+    --tab-h: 52px;
+    --order-w: 300px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  
-  body {
-    background: radial-gradient(circle at 15% 30%, #11151f, #03050a);
-    color: #ffffff;
-    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, 'Georgia', serif;
-    height: 100dvh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    backdrop-filter: blur(0px);
-  }
+  body { background: var(--bg); color: var(--text); font-family: 'Georgia', serif; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; }
 
-  /* SCROLLBAR NEON */
-  ::-webkit-scrollbar { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track { background: rgba(0, 255, 255, 0.05); border-radius: 10px; }
-  ::-webkit-scrollbar-thumb { background: var(--neon-cyan); border-radius: 10px; box-shadow: 0 0 4px var(--neon-cyan); }
+  /* HEADER */
+  #header { background: #111; border-bottom: 1px solid var(--border); padding: 0 12px; height: 48px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  #header h1 { font-size: 16px; font-weight: normal; letter-spacing: 1px; color: var(--accent); }
+  #order-count { background: var(--accent); color: #111; font-size: 12px; font-weight: bold; border-radius: 12px; padding: 2px 8px; display: none; }
+  #admin-btn { background: none; border: 1px solid var(--border); color: var(--text2); font-size: 11px; padding: 4px 10px; border-radius: 4px; cursor: pointer; }
 
-  /* HEADER — GLASS + NEON */
-  #header {
-    background: rgba(8, 12, 22, 0.6);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--glass-border);
-    padding: 0 20px;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-shrink: 0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
-  }
-  #header h1 {
-    font-size: 18px;
-    font-weight: 500;
-    letter-spacing: 1.5px;
-    background: linear-gradient(135deg, #fff, var(--neon-cyan));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    text-shadow: 0 0 8px rgba(0,255,255,0.6);
-    font-family: monospace;
-  }
-  #order-count {
-    background: var(--neon-cyan);
-    color: #0a0c12;
-    font-weight: bold;
-    border-radius: 40px;
-    padding: 2px 12px;
-    font-size: 12px;
-    box-shadow: 0 0 8px var(--neon-cyan);
-    display: none;
-  }
-  #admin-btn {
-    background: rgba(0, 255, 255, 0.1);
-    border: 1px solid var(--glass-border);
-    color: var(--neon-cyan);
-    font-size: 11px;
-    padding: 6px 14px;
-    border-radius: 40px;
-    cursor: pointer;
-    backdrop-filter: blur(8px);
-    transition: all 0.2s;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-  }
-  #admin-btn:hover, #admin-btn:active {
-    background: rgba(0, 255, 255, 0.25);
-    box-shadow: 0 0 12px var(--neon-cyan);
-    border-color: var(--neon-cyan);
-  }
-
-  /* TABS — GLASS */
-  #tabs {
-    display: flex;
-    background: rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--glass-border);
-    flex-shrink: 0;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .tab-btn {
-    flex-shrink: 0;
-    padding: 0 24px;
-    height: 52px;
-    border: none;
-    background: transparent;
-    color: #ccc;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s;
-    white-space: nowrap;
-    letter-spacing: 0.8px;
-  }
-  .tab-btn.active {
-    color: var(--neon-cyan);
-    border-bottom-color: var(--neon-cyan);
-    text-shadow: 0 0 6px var(--neon-cyan);
-  }
+  /* TABS */
+  #tabs { display: flex; background: #111; border-bottom: 2px solid var(--border); flex-shrink: 0; overflow-x: auto; scrollbar-width: none; }
+  #tabs::-webkit-scrollbar { display: none; }
+  .tab-btn { flex-shrink: 0; padding: 0 18px; height: var(--tab-h); border: none; background: none; color: var(--text2); font-family: inherit; font-size: 14px; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.15s; white-space: nowrap; }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
 
   /* MAIN LAYOUT */
-  #main {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-    gap: 0px;  /* handle will sit between */
-  }
+  #main { display: flex; flex: 1; overflow: hidden; }
 
-  /* MENU AREA — GLASS CARDS */
-  #menu-area {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px;
-    background: rgba(8, 12, 20, 0.3);
-    backdrop-filter: blur(2px);
-    min-width: 200px;
-  }
-
-  /* RESIZE HANDLE (draggable) */
-  #resize-handle {
-    width: 6px;
-    background: rgba(0, 255, 255, 0.3);
-    cursor: ew-resize;
-    transition: background 0.2s;
-    flex-shrink: 0;
-    position: relative;
-    z-index: 10;
-  }
-  #resize-handle:hover {
-    background: var(--neon-cyan);
-    box-shadow: 0 0 8px var(--neon-cyan);
-  }
-  #resize-handle:active {
-    background: var(--neon-cyan);
-  }
-
-  /* ORDER PANEL — resizable width */
-  #order-panel {
-    width: var(--order-w);
-    background: rgba(12, 16, 26, 0.7);
-    backdrop-filter: blur(20px);
-    border-left: 1px solid var(--glass-border);
-    display: flex;
-    flex-direction: column;
-    flex-shrink: 0;
-    box-shadow: -5px 0 30px rgba(0,0,0,0.5);
-  }
-  .subcat-label {
-    font-size: 12px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--neon-gold);
-    text-shadow: 0 0 3px rgba(255, 220, 100, 0.6);
-    margin: 20px 0 10px 4px;
-    font-weight: 600;
-  }
-  .item-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 12px;
-    margin-bottom: 12px;
-  }
+  /* MENU AREA */
+  #menu-area { flex: 1; overflow-y: auto; padding: 12px; }
+  .subcat-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text2); margin: 16px 0 8px; padding-left: 2px; }
+  .subcat-label:first-child { margin-top: 0; }
+  .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; margin-bottom: 4px; }
   .item-btn {
-    background: rgba(20, 28, 45, 0.65);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    padding: 12px 6px;
-    min-height: 80px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    cursor: pointer;
-    transition: all 0.18s;
-    color: white;
-    text-align: center;
-    box-shadow: var(--shadow-glass);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 6px;
+    min-height: 64px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    cursor: pointer; transition: all 0.1s; color: var(--text); font-family: inherit; text-align: center;
   }
-  .item-btn:active {
-    transform: scale(0.96);
-    background: rgba(0, 255, 255, 0.2);
-    border-color: var(--neon-cyan);
-    box-shadow: 0 0 12px var(--neon-cyan);
-  }
-  .item-btn .btn-name {
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: 0.3px;
-  }
-  .item-btn .btn-price {
-    font-size: 12px;
-    color: var(--neon-cyan);
-    text-shadow: 0 0 4px var(--neon-cyan);
-    font-weight: bold;
-  }
-  .item-btn.has-mods {
-    border-top: 2px solid var(--neon-cyan);
-    box-shadow: 0 0 6px rgba(0,255,255,0.4);
-  }
+  .item-btn:active { background: var(--surface2); transform: scale(0.97); }
+  .item-btn .btn-name { font-size: 13px; line-height: 1.2; }
+  .item-btn .btn-price { font-size: 11px; color: var(--accent); }
+  .item-btn.has-mods { border-top: 2px solid var(--accent); }
 
-  #tab-bar {
-    display: flex;
-    gap: 8px;
-    padding: 12px 12px;
-    border-bottom: 1px solid var(--glass-border);
-    overflow-x: auto;
-  }
-  .order-tab {
-    flex-shrink: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(8px);
-    border: 1px solid var(--glass-border);
-    border-radius: 40px;
-    padding: 6px 16px;
-    font-size: 12px;
-    cursor: pointer;
-    color: #ddd;
-    transition: all 0.2s;
-    font-weight: 500;
-  }
-  .order-tab.active {
-    background: var(--neon-cyan);
-    color: #0a0c12;
-    border-color: var(--neon-cyan);
-    box-shadow: 0 0 12px var(--neon-cyan);
-  }
-  #new-tab-btn {
-    flex-shrink: 0;
-    background: rgba(0,0,0,0.5);
-    border: 1px dashed var(--glass-border);
-    border-radius: 40px;
-    padding: 6px 16px;
-    font-size: 18px;
-    cursor: pointer;
-    color: var(--neon-cyan);
-  }
-  #order-items {
-    flex: 1;
-    overflow-y: auto;
-    padding: 12px;
-  }
-  .order-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(0, 255, 255, 0.15);
-    background: rgba(255,255,255,0.02);
-    border-radius: 12px;
-    margin-bottom: 2px;
-  }
-  .order-item-name {
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: 0.2px;
-  }
-  .order-item-mods {
-    font-size: 11px;
-    color: var(--neon-gold);
-    text-shadow: 0 0 2px #ffd966;
-    margin-top: 4px;
-  }
-  .order-item-price {
-    font-size: 14px;
-    color: var(--neon-cyan);
-    text-shadow: var(--text-glow);
-    font-weight: bold;
-  }
-  .remove-btn {
-    background: none;
-    border: none;
-    color: var(--red-neon);
-    font-size: 18px;
-    cursor: pointer;
-    transition: 0.1s;
-    filter: drop-shadow(0 0 3px #ff4d6d);
-  }
+  /* ORDER PANEL */
+  #order-panel { width: var(--order-w); background: var(--surface); border-left: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
+  #tab-bar { display: flex; gap: 4px; padding: 8px; border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; }
+  #tab-bar::-webkit-scrollbar { display: none; }
+  .order-tab { flex-shrink: 0; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer; color: var(--text2); }
+  .order-tab.active { background: var(--accent); color: #111; border-color: var(--accent); }
+  #new-tab-btn { flex-shrink: 0; background: none; border: 1px dashed var(--border); border-radius: 6px; padding: 4px 10px; font-size: 18px; line-height: 1; cursor: pointer; color: var(--text2); }
+  #order-items { flex: 1; overflow-y: auto; padding: 8px; }
+  .order-item { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border); }
+  .order-item-info { flex: 1; }
+  .order-item-name { font-size: 13px; }
+  .order-item-mods { font-size: 11px; color: var(--text2); margin-top: 2px; }
+  .order-item-price { font-size: 13px; color: var(--accent); white-space: nowrap; }
+  .remove-btn { background: none; border: none; color: var(--red); font-size: 16px; cursor: pointer; padding: 0 4px; line-height: 1; flex-shrink: 0; }
+  #order-footer { padding: 10px; border-top: 1px solid var(--border); }
+  #totals { margin-bottom: 10px; }
+  .total-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--text2); margin-bottom: 3px; }
+  .total-row.big { font-size: 20px; color: var(--text); font-weight: bold; margin-top: 6px; }
+  #pay-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .pay-btn { border: none; border-radius: 8px; padding: 12px 0; font-size: 14px; font-family: inherit; cursor: pointer; }
+  #pay-card { background: var(--accent); color: #111; }
+  #pay-cash { background: var(--accent2); color: #111; }
+  #void-btn { grid-column: span 2; background: none; border: 1px solid var(--red); color: var(--red); border-radius: 8px; padding: 8px; font-size: 12px; font-family: inherit; cursor: pointer; margin-top: 2px; }
 
-  /* FOOTER + TOTALS NEON */
-  #order-footer {
-    padding: 16px;
-    border-top: 1px solid var(--glass-border);
-    background: rgba(0,0,0,0.3);
-  }
-  .total-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-    color: #ddd;
-    margin-bottom: 6px;
-  }
-  .total-row.big {
-    font-size: 24px;
-    color: var(--neon-cyan);
-    text-shadow: var(--text-glow);
-    margin-top: 8px;
-    font-weight: 700;
-  }
-  #subtotal, #gst-display, #total-display {
-    font-weight: 600;
-    color: var(--neon-cyan);
-    text-shadow: 0 0 3px var(--neon-cyan);
-  }
-  #pay-btns {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 8px;
-  }
-  .pay-btn {
-    border: none;
-    border-radius: 50px;
-    padding: 12px 0;
-    font-size: 14px;
-    font-family: inherit;
-    cursor: pointer;
-    font-weight: bold;
-    backdrop-filter: blur(12px);
-    transition: 0.2s;
-    background: rgba(0, 0, 0, 0.6);
-    color: white;
-    border: 1px solid var(--glass-border);
-  }
-  #pay-card {
-    color: var(--neon-cyan);
-    border-color: var(--neon-cyan);
-    box-shadow: 0 0 6px rgba(0,255,255,0.3);
-  }
-  #pay-cash {
-    color: var(--neon-lime);
-    border-color: var(--neon-lime);
-  }
-  #void-btn {
-    grid-column: span 2;
-    background: rgba(255, 77, 109, 0.15);
-    border: 1px solid var(--red-neon);
-    color: var(--red-neon);
-    border-radius: 50px;
-    padding: 8px;
-    font-size: 12px;
-    backdrop-filter: blur(4px);
-  }
+  /* MODS MODAL */
+  #modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 100; display: none; align-items: flex-end; justify-content: center; }
+  #modal-overlay.open { display: flex; }
+  #mods-modal { background: var(--surface); border-radius: 16px 16px 0 0; width: 100%; max-width: 600px; max-height: 75vh; display: flex; flex-direction: column; padding: 16px; }
+  #mods-modal h2 { font-size: 16px; font-weight: normal; margin-bottom: 4px; color: var(--accent); }
+  #mods-modal .item-base-price { font-size: 13px; color: var(--text2); margin-bottom: 12px; }
+  #mods-scroll { overflow-y: auto; flex: 1; }
+  .mod-group-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text2); margin: 12px 0 6px; }
+  .mod-group-label:first-child { margin-top: 0; }
+  .mods-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .mod-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 8px 6px; text-align: center; cursor: pointer; transition: all 0.1s; }
+  .mod-btn:active { transform: scale(0.97); }
+  .mod-btn.selected { background: #3a3020; border-color: var(--accent); }
+  .mod-btn .mod-name { font-size: 12px; color: var(--text); }
+  .mod-btn .mod-price { font-size: 11px; color: var(--accent); margin-top: 2px; }
+  #modal-footer { display: flex; gap: 8px; margin-top: 12px; }
+  #modal-add { flex: 1; background: var(--accent); color: #111; border: none; border-radius: 8px; padding: 14px; font-size: 15px; font-family: inherit; cursor: pointer; }
+  #modal-cancel { background: none; border: 1px solid var(--border); color: var(--text2); border-radius: 8px; padding: 14px 20px; font-size: 14px; font-family: inherit; cursor: pointer; }
 
-  /* MODALS — GLASS + NEON GLOW */
-  #modal-overlay, #pay-modal, #name-modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(12px);
-    z-index: 100;
-    display: none;
-    align-items: center;
-    justify-content: center;
-  }
-  #modal-overlay.open, #pay-modal.open, #name-modal.open { display: flex; }
-  #mods-modal, #pay-inner, #name-inner {
-    background: rgba(16, 20, 32, 0.85);
-    backdrop-filter: blur(24px);
-    border-radius: 32px;
-    width: 100%;
-    max-width: 520px;
-    border: 1px solid var(--glass-border-strong);
-    box-shadow: 0 25px 45px rgba(0,0,0,0.5), 0 0 20px rgba(0,255,255,0.2);
-    padding: 20px;
-  }
-  #mods-modal h2, #name-inner h3 {
-    color: var(--neon-cyan);
-    text-shadow: var(--text-glow);
-  }
-  .mod-group-label {
-    font-size: 12px;
-    letter-spacing: 1.5px;
-    color: var(--neon-gold);
-    margin: 14px 0 8px;
-  }
-  .mods-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-  }
-  .mod-btn {
-    background: rgba(30, 35, 55, 0.8);
-    backdrop-filter: blur(4px);
-    border: 1px solid var(--glass-border);
-    border-radius: 28px;
-    padding: 8px;
-    text-align: center;
-    cursor: pointer;
-    transition: 0.1s;
-  }
-  .mod-btn.selected {
-    background: rgba(0, 255, 255, 0.2);
-    border-color: var(--neon-cyan);
-    box-shadow: 0 0 12px var(--neon-cyan);
-  }
-  .mod-name { font-size: 12px; font-weight: 500; }
-  .mod-price { font-size: 11px; color: var(--neon-cyan); }
-  #modal-add, #pay-done, #name-ok {
-    background: linear-gradient(135deg, rgba(0,255,255,0.2), rgba(0,180,200,0.3));
-    border: 1px solid var(--neon-cyan);
-    color: white;
-    text-shadow: 0 0 3px #0ff;
-    border-radius: 60px;
-    padding: 12px;
-    font-weight: bold;
-  }
-  #modal-cancel, #pay-back {
-    background: rgba(0,0,0,0.5);
-    border: 1px solid var(--glass-border);
-    color: #ccc;
-  }
-  #pay-amount {
-    font-size: 54px;
-    color: var(--neon-cyan);
-    text-shadow: 0 0 12px cyan;
-  }
-  #receipt-slider {
-    background: #2a2e3f;
-  }
-  #receipt-toggle:checked + #receipt-slider {
-    background: var(--neon-cyan);
-    box-shadow: 0 0 8px cyan;
-  }
-  /* Admin panel glass neon */
-  #admin-panel {
-    position: fixed;
-    inset: 0;
-    background: rgba(5, 7, 15, 0.85);
-    backdrop-filter: blur(20px);
-    z-index: 300;
-    display: none;
-    flex-direction: column;
-  }
+  /* PAYMENT MODAL */
+  #pay-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; display: none; align-items: center; justify-content: center; }
+  #pay-modal.open { display: flex; }
+  #pay-inner { background: var(--surface); border-radius: 16px; padding: 32px; width: 320px; text-align: center; }
+  #pay-inner h2 { font-size: 15px; font-weight: normal; color: var(--text2); margin-bottom: 8px; }
+  #pay-amount { font-size: 52px; color: var(--accent); margin: 12px 0; }
+  #pay-inner p { font-size: 13px; color: var(--text2); margin-bottom: 24px; }
+  #pay-done { background: var(--accent); color: #111; border: none; border-radius: 10px; padding: 14px 40px; font-size: 16px; font-family: inherit; cursor: pointer; }
+  #pay-back { background: none; border: none; color: var(--text2); font-family: inherit; font-size: 13px; cursor: pointer; margin-top: 12px; display: block; width: 100%; }
+
+  /* ADMIN */
+  #admin-panel { position: fixed; inset: 0; background: var(--bg); z-index: 300; display: none; flex-direction: column; overflow-y: auto; }
   #admin-panel.open { display: flex; }
-  #admin-header {
-    background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--glass-border);
-    padding: 14px 20px;
-  }
-  #admin-header h1 { color: var(--neon-cyan); text-shadow: 0 0 4px #0ff; }
-  .admin-item-row input, #add-item-form input, #add-item-form select, #pin-input {
-    background: rgba(0,0,0,0.6);
-    border: 1px solid var(--glass-border);
-    color: #fff;
-    backdrop-filter: blur(4px);
-    border-radius: 40px;
-    padding: 10px 14px;
-  }
-  .admin-item-row input:focus, #pin-input:focus {
-    border-color: var(--neon-cyan);
-    box-shadow: 0 0 8px cyan;
-    outline: none;
-  }
-  .admin-save-row, #add-item-btn, #save-printer {
-    background: rgba(0, 255, 255, 0.15);
-    border: 1px solid var(--neon-cyan);
-    color: var(--neon-cyan);
-    border-radius: 32px;
-  }
-  .admin-del {
-    border-color: var(--red-neon);
-    color: var(--red-neon);
-  }
-  #cash-given {
-    background: rgba(0,0,0,0.6);
-    border: 1px solid var(--glass-border);
-    color: var(--neon-cyan);
-    border-radius: 40px;
-  }
-  #change-display {
-    color: var(--neon-lime);
-    text-shadow: 0 0 4px #0f6;
-  }
-  .empty-order {
-    color: rgba(255,255,255,0.6);
-    text-align: center;
-    text-shadow: 0 0 2px cyan;
-  }
-  button {
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  button:hover, button:active {
-    filter: brightness(1.05);
-    box-shadow: 0 0 12px rgba(0,255,255,0.4);
-  }
-  #admin-content .subcat-label {
-    color: var(--neon-pink);
-  }
-  #printer-config strong {
-    color: var(--neon-cyan);
-  }
+  #admin-header { background: #111; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  #admin-header h1 { color: var(--accent); font-size: 16px; font-weight: normal; }
+  #admin-close { background: none; border: 1px solid var(--border); color: var(--text2); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-family: inherit; }
+  #pin-screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
+  #pin-screen h2 { color: var(--text2); font-weight: normal; }
+  #pin-input { background: var(--surface); border: 1px solid var(--border); color: var(--text); font-size: 24px; padding: 12px 20px; border-radius: 8px; text-align: center; letter-spacing: 8px; width: 200px; outline: none; }
+  #pin-error { color: var(--red); font-size: 13px; }
+  #admin-content { display: none; padding: 16px; }
+  #admin-content.visible { display: block; }
+  .admin-section { margin-bottom: 24px; }
+  .admin-section h3 { font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: var(--text2); margin-bottom: 12px; }
+  .admin-item-row { display: flex; gap: 8px; align-items: center; padding: 8px; background: var(--surface); border-radius: 8px; margin-bottom: 6px; }
+  .admin-item-row input { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 6px 8px; border-radius: 6px; font-family: inherit; font-size: 13px; outline: none; }
+  .admin-item-row input:focus { border-color: var(--accent); }
+  .ai-name { flex: 1.5; }
+  .ai-btn { flex: 1; }
+  .ai-price { width: 70px; }
+  .ai-tab { flex: 1; }
+  .admin-del { background: none; border: 1px solid var(--red); color: var(--red); padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+  .admin-save-row { background: none; border: 1px solid var(--accent); color: var(--accent); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+  #add-item-form { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  #add-item-form input, #add-item-form select { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 8px; border-radius: 6px; font-family: inherit; font-size: 13px; outline: none; }
+  #add-item-form select option { background: var(--surface2); }
+  #add-item-btn { background: var(--accent); color: #111; border: none; border-radius: 6px; padding: 8px 16px; font-family: inherit; cursor: pointer; }
+
+  /* PRINTER CONFIG */
+  #printer-config { background: var(--surface); border-radius: 10px; padding: 14px; margin-bottom: 16px; }
+  #printer-config input { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 8px; border-radius: 6px; font-family: inherit; font-size: 14px; outline: none; width: 200px; }
+  #printer-config input:focus { border-color: var(--accent); }
+  #save-printer { background: var(--accent); color: #111; border: none; border-radius: 6px; padding: 8px 16px; font-family: inherit; cursor: pointer; margin-left: 8px; }
+
+  /* EMPTY STATE */
+  .empty-order { color: var(--text2); font-size: 13px; text-align: center; margin-top: 40px; }
+
+  /* NAME MODAL */
+  #name-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 150; display: none; align-items: center; justify-content: center; }
+  #name-modal.open { display: flex; }
+  #name-inner { background: var(--surface); border-radius: 14px; padding: 24px; width: 280px; }
+  #name-inner h3 { margin-bottom: 12px; font-weight: normal; color: var(--accent); }
+  #name-input { width: 100%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 10px; border-radius: 8px; font-family: inherit; font-size: 16px; outline: none; margin-bottom: 12px; }
+  #name-input:focus { border-color: var(--accent); }
+  #name-ok { width: 100%; background: var(--accent); color: #111; border: none; border-radius: 8px; padding: 12px; font-family: inherit; font-size: 15px; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -538,7 +172,7 @@
 
 <div id="main">
   <div id="menu-area"></div>
-  <div id="resize-handle"></div>   <!-- draggable resize handle -->
+
   <div id="order-panel">
     <div id="tab-bar">
       <button id="new-tab-btn" onclick="newOrderTab()">+</button>
@@ -580,23 +214,15 @@
   <p id="pay-instructions">Process payment on terminal, then tap Done.</p>
     <div id="cash-calc" style="display:none;margin:16px 0">
       <input type="number" id="cash-given" inputmode="decimal" placeholder="Amount given" 
-        style="width:100%;background:#2e2e3e;border:1px solid #0ff;color:#fff;padding:12px;border-radius:40px;font-size:20px;text-align:center;outline:none;margin-bottom:10px"
+        style="width:100%;background:#2e2e2e;border:1px solid #3a3a3a;color:#f0ece4;padding:12px;border-radius:8px;font-size:20px;text-align:center;font-family:inherit;outline:none;margin-bottom:10px"
         oninput="calcChange()">
-      <div id="change-display" style="font-size:28px;min-height:40px"></div>
+      <div id="change-display" style="font-size:28px;color:#8fbf82;min-height:40px"></div>
     </div>
-<div id="receipt-toggle-row" style="display:flex;align-items:center;justify-content:center;gap:12px;margin:8px 0 4px">
-      <span style="color:var(--text2);font-size:14px">Print Docket</span>
-      <label style="position:relative;display:inline-block;width:48px;height:26px">
-        <input type="checkbox" id="docket-toggle" onchange="updateDocketSlider()" style="opacity:0;width:0;height:0" checked>
-        <span id="docket-slider" style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#0ff;border-radius:26px;transition:.3s"></span>
-        <span id="docket-knob" style="position:absolute;content:'';height:20px;width:20px;left:3px;bottom:3px;background:white;border-radius:50%;transition:.3s;transform:translateX(22px)"></span>
-      </label>
-    </div>
-    <div id="receipt-toggle-row" style="display:flex;align-items:center;justify-content:center;gap:12px;margin:4px 0 8px">
+    <div id="receipt-toggle-row" style="display:flex;align-items:center;justify-content:center;gap:12px;margin:16px 0 8px">
       <span style="color:var(--text2);font-size:14px">Print Receipt</span>
       <label style="position:relative;display:inline-block;width:48px;height:26px">
         <input type="checkbox" id="receipt-toggle" onchange="updateReceiptSlider()" style="opacity:0;width:0;height:0">
-        <span id="receipt-slider" style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#3a3a4a;border-radius:26px;transition:.3s"></span>
+        <span id="receipt-slider" style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#3a3a3a;border-radius:26px;transition:.3s"></span>
         <span id="receipt-knob" style="position:absolute;content:'';height:20px;width:20px;left:3px;bottom:3px;background:white;border-radius:50%;transition:.3s"></span>
       </label>
     </div>
@@ -609,7 +235,7 @@
 <div id="name-modal">
   <div id="name-inner">
     <h3>Tab Name</h3>
-    <input id="name-input" placeholder="Customer name or table..." maxlength="20" style="background:rgba(0,0,0,0.5);border:1px solid #0ff;color:#fff;border-radius:40px;padding:10px;">
+    <input id="name-input" placeholder="Customer name or table..." maxlength="20">
     <button id="name-ok" onclick="confirmTabName()">Open Tab</button>
   </div>
 </div>
@@ -622,25 +248,25 @@
   </div>
   <div id="pin-screen">
     <h2>Enter PIN</h2>
-    <input type="password" id="pin-input" maxlength="4" inputmode="numeric" placeholder="••••">
+    <input type="password" id="pin-input" maxlength="4" inputmode="numeric" oninput="checkPin(this.value)" placeholder="••••">
     <div id="pin-error"></div>
   </div>
   <div id="admin-content">
     <div style="padding:16px">
       <div class="admin-section">
           <h3>Change PIN</h3>
-          <div id="printer-config" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:rgba(0,0,0,0.3);padding:10px;border-radius:28px;">
-            <input type="password" id="new-pin" placeholder="New PIN" maxlength="4" inputmode="numeric" style="width:120px;">
-            <input type="password" id="confirm-pin" placeholder="Confirm PIN" maxlength="4" inputmode="numeric" style="width:120px;">
-            <button onclick="changePin()" style="background:rgba(0,255,255,0.2);border:1px solid #0ff;color:#0ff;border-radius:40px;padding:8px 16px;">Save PIN</button>
-            <div id="pin-change-msg" style="font-size:12px;color:var(--neon-lime)"></div>
+          <div id="printer-config" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <input type="password" id="new-pin" placeholder="New PIN" maxlength="4" inputmode="numeric" style="width:120px;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px;border-radius:6px;font-family:inherit;font-size:16px;letter-spacing:4px;outline:none">
+            <input type="password" id="confirm-pin" placeholder="Confirm PIN" maxlength="4" inputmode="numeric" style="width:120px;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px;border-radius:6px;font-family:inherit;font-size:16px;letter-spacing:4px;outline:none">
+            <button onclick="changePin()" style="background:var(--accent);color:#111;border:none;border-radius:6px;padding:8px 16px;font-family:inherit;cursor:pointer">Save PIN</button>
+            <div id="pin-change-msg" style="font-size:12px;color:var(--accent2)"></div>
           </div>
         </div>  
         <h3>Receipt Printing</h3>
-        <div id="printer-config" style="margin-bottom:20px;">
-          <div style="font-size:13px;color:#ccc;line-height:1.6">
-            Printing uses <strong style="color:var(--neon-cyan)">Star PassPRNT</strong> — a free app that bridges the till to the Star TSP100III.<br><br>
-            <strong style="color:var(--neon-cyan)">One-time setup:</strong><br>
+        <div id="printer-config">
+          <div style="font-size:13px;color:var(--text2);line-height:1.6">
+            Printing uses <strong style="color:var(--accent)">Star PassPRNT</strong> — a free app that bridges the till to the Star TSP100III.<br><br>
+            <strong style="color:var(--text)">One-time setup:</strong><br>
             1. Install <em>PassPRNT</em> from the App Store on this iPad<br>
             2. Open PassPRNT → tap <em>Configuration</em><br>
             3. Set <em>Printer</em> to <strong>TSP100IIILAN</strong><br>
@@ -653,7 +279,7 @@
       <div class="admin-section">
         <h3>Menu Items</h3>
         <div id="admin-items-list"></div>
-        <div id="add-item-form" style="margin-top:16px; display:flex; gap:8px; flex-wrap:wrap">
+        <div id="add-item-form" style="margin-top:16px">
           <input id="ni-name" placeholder="Full name" style="flex:1.5">
           <input id="ni-btn" placeholder="Button label" style="flex:1">
           <input id="ni-price" placeholder="Price" type="number" step="0.10" style="width:80px">
@@ -669,7 +295,7 @@
 </div>
 
 <script>
-// ─── COMPLETE MENU DATA (FULL 177 ITEMS) ───────────────────────────────────────────
+// ─── DATA ───────────────────────────────────────────────────────────────────
 const MENU_DATA = [{"id":1,"name":"Flat White 6oz","button_name":"FW 6","price":6.2,"tab":"Coffee","subcategory":"White Coffee","has_mods":true,"active":true},{"id":2,"name":"Flat White 8oz","button_name":"FW 8","price":6.5,"tab":"Coffee","subcategory":"White Coffee","has_mods":true,"active":true},{"id":3,"name":"Flat White 12oz","button_name":"FW 12","price":7.2,"tab":"Coffee","subcategory":"White Coffee","has_mods":true,"active":true},{"id":4,"name":"Flat White 16oz","button_name":"FW 16","price":7.9,"tab":"Coffee","subcategory":"White Coffee","has_mods":true,"active":true},{"id":5,"name":"Latte","button_name":"Latte","price":6.5,"tab":"Coffee","subcategory":"White Coffee","has_mods":true,"active":true},{"id":6,"name":"Cappuccino","button_name":"Cap","price":6.5,"tab":"Coffee","subcategory":"White Coffee","has_mods":true,"active":true},{"id":7,"name":"Macchiato","button_name":"Macci","price":5.5,"tab":"Coffee","subcategory":"White Coffee","has_mods":true,"active":true},{"id":8,"name":"Mochaccino","button_name":"Mocha","price":6.5,"tab":"Coffee","subcategory":"White Coffee","has_mods":true,"active":true},{"id":9,"name":"Piccolo","button_name":"Piccolo","price":6.2,"tab":"Coffee","subcategory":"White Coffee","has_mods":true,"active":true},{"id":10,"name":"Vienna","button_name":"Vienna","price":6.5,"tab":"Coffee","subcategory":"White Coffee","has_mods":true,"active":true},{"id":11,"name":"Chai Latte","button_name":"Chai","price":6.5,"tab":"Coffee","subcategory":"White Coffee","has_mods":true,"active":true},{"id":12,"name":"Lemon Honey Ginger","button_name":"Lemon Honey Ginger","price":6.5,"tab":"Coffee","subcategory":"White Coffee","has_mods":true,"active":true},{"id":13,"name":"Fluffy","button_name":"Fluffy","price":3.5,"tab":"Coffee","subcategory":"White Coffee","has_mods":true,"active":true},{"id":14,"name":"Price Adjustment .50","button_name":".50","price":0.5,"tab":"Coffee","subcategory":"White Coffee","has_mods":true,"active":true},{"id":15,"name":"Price Adjustment $1","button_name":"$1","price":1.0,"tab":"Coffee","subcategory":"White Coffee","has_mods":true,"active":true},{"id":16,"name":"Change","button_name":"Change","price":0.01,"tab":"Coffee","subcategory":"White Coffee","has_mods":true,"active":true},{"id":17,"name":"Short Black","button_name":"S/B","price":5.5,"tab":"Coffee","subcategory":"Black Coffee","has_mods":true,"active":true},{"id":18,"name":"Long Black","button_name":"L/B","price":5.5,"tab":"Coffee","subcategory":"Black Coffee","has_mods":true,"active":true},{"id":19,"name":"Americano","button_name":"USA","price":5.5,"tab":"Coffee","subcategory":"Black Coffee","has_mods":true,"active":true},{"id":20,"name":"Hot Chocolate","button_name":"H/C","price":6.5,"tab":"Coffee","subcategory":"Hot Chocolate","has_mods":true,"active":true},{"id":21,"name":"Matcha Latte","button_name":"Matcha Latte","price":6.5,"tab":"Coffee","subcategory":"Hot Chocolate","has_mods":true,"active":true},{"id":22,"name":"English Breakfast Tea","button_name":"EBT","price":6.5,"tab":"Coffee","subcategory":"Tea","has_mods":true,"active":true},{"id":23,"name":"Earl Grey Tea","button_name":"EGT","price":6.5,"tab":"Coffee","subcategory":"Tea","has_mods":true,"active":true},{"id":24,"name":"Tokyo Lime Tea","button_name":"Tokyo Lime","price":6.5,"tab":"Coffee","subcategory":"Tea","has_mods":true,"active":true},{"id":25,"name":"Peppermint Tea","button_name":"Peppy","price":6.5,"tab":"Coffee","subcategory":"Tea","has_mods":true,"active":true},{"id":26,"name":"Restful Tea","button_name":"Restful","price":6.5,"tab":"Coffee","subcategory":"Tea","has_mods":true,"active":true},{"id":27,"name":"Berrylicious Tea","button_name":"Berry Tea","price":6.5,"tab":"Coffee","subcategory":"Tea","has_mods":true,"active":true},{"id":28,"name":"Gunpowder Green Tea","button_name":"Gunpowder Green Tea","price":6.5,"tab":"Coffee","subcategory":"Tea","has_mods":true,"active":true},{"id":29,"name":"Berry Slice","button_name":"Rasp GF","price":6.9,"tab":"Food","subcategory":"Sweet","has_mods":false,"active":true},{"id":30,"name":"Choc, Coconut, Caramel","button_name":"Choc, Coconut, Caram","price":6.2,"tab":"Food","subcategory":"Sweet","has_mods":false,"active":true},{"id":31,"name":"Cookie Caramel","button_name":"Cookie Caramel","price":6.2,"tab":"Food","subcategory":"Sweet","has_mods":false,"active":true},{"id":32,"name":"Oaty Ginger Crunch","button_name":"Ginger Crunch","price":6.2,"tab":"Food","subcategory":"Sweet","has_mods":false,"active":true},{"id":33,"name":"Lemon Meringue","button_name":"Lemon Shortcake","price":7.8,"tab":"Food","subcategory":"Sweet","has_mods":false,"active":true},{"id":34,"name":"Citrus Slice","button_name":"Citrus Slice","price":5.9,"tab":"Food","subcategory":"Sweet","has_mods":false,"active":true},{"id":35,"name":"Chocolate Brownie","button_name":"Brownie","price":6.2,"tab":"Food","subcategory":"Sweet","has_mods":false,"active":true},{"id":36,"name":"Flav Brownie","button_name":"Flav Brownie","price":7.9,"tab":"Food","subcategory":"Sweet","has_mods":false,"active":true},{"id":37,"name":"Bliss Ball","button_name":"Bliss Ball","price":3.9,"tab":"Food","subcategory":"Sweet","has_mods":false,"active":true},{"id":38,"name":"Rocky Road","button_name":"Rocky Road","price":8.9,"tab":"Food","subcategory":"Sweet","has_mods":false,"active":true},{"id":39,"name":"Lollie Cake","button_name":"Lollie Cake","price":5.9,"tab":"Food","subcategory":"Sweet","has_mods":false,"active":true},{"id":40,"name":"Gingernut Slice","button_name":"Gingernut Slice","price":7.8,"tab":"Food","subcategory":"Sweet","has_mods":false,"active":true},{"id":41,"name":"Tiramisu Brownie","button_name":"Tiramisu B","price":8.9,"tab":"Food","subcategory":"Sweet","has_mods":false,"active":true},{"id":42,"name":"Blueberry & Custard Croissant Pudding","button_name":"Blueberry & Custard","price":8.9,"tab":"Food","subcategory":"Sweet","has_mods":false,"active":true},{"id":43,"name":"Choc Macaroon","button_name":"Choc Macaroon","price":5.2,"tab":"Food","subcategory":"Sweet","has_mods":false,"active":true},{"id":44,"name":"Coconut ice","button_name":"Coconut ice","price":5.2,"tab":"Food","subcategory":"Sweet","has_mods":false,"active":true},{"id":45,"name":"Melting Moment","button_name":"Melting Moment","price":5.9,"tab":"Food","subcategory":"Sweet","has_mods":false,"active":true},{"id":46,"name":"Rice Krispie Treat","button_name":"Rice Krispie Treat","price":3.5,"tab":"Food","subcategory":"Sweet","has_mods":false,"active":true},{"id":47,"name":"Sweet Risotto","button_name":"Sweet Risotto","price":7.9,"tab":"Food","subcategory":"Sweet","has_mods":false,"active":true},{"id":48,"name":"Xmas Brownie","button_name":"Xmas Brownie","price":5.9,"tab":"Food","subcategory":"Sweet","has_mods":false,"active":true},{"id":49,"name":"Butter Tart","button_name":"Butter Tart","price":5.3,"tab":"Food","subcategory":"Sweet","has_mods":false,"active":true},{"id":50,"name":"Cheese Muffin","button_name":"Cheese Muffin","price":5.9,"tab":"Food","subcategory":"Muffins, Fruit & Breakfast","has_mods":false,"active":true},{"id":51,"name":"Chilli, Cheese & Bacon","button_name":"Chilli, Cheese & Bac","price":6.5,"tab":"Food","subcategory":"Muffins, Fruit & Breakfast","has_mods":false,"active":true},{"id":52,"name":"Apple Crumble Muffin","button_name":"Apple Muff","price":6.2,"tab":"Food","subcategory":"Muffins, Fruit & Breakfast","has_mods":false,"active":true},{"id":53,"name":"Bran Muffin","button_name":"Bran Muff","price":6.2,"tab":"Food","subcategory":"Muffins, Fruit & Breakfast","has_mods":false,"active":true},{"id":54,"name":"GF Cheese Muffin","button_name":"GF Cheese Muffin","price":4.9,"tab":"Food","subcategory":"Muffins, Fruit & Breakfast","has_mods":false,"active":true},{"id":55,"name":"Special Muffin","button_name":"Special Muffin","price":6.2,"tab":"Food","subcategory":"Muffins, Fruit & Breakfast","has_mods":false,"active":true},{"id":56,"name":"Savoury Muffin","button_name":"Savoury Muffin","price":6.5,"tab":"Food","subcategory":"Muffins, Fruit & Breakfast","has_mods":false,"active":true},{"id":57,"name":"Loaf","button_name":"Loaf","price":6.2,"tab":"Food","subcategory":"Muffins, Fruit & Breakfast","has_mods":false,"active":true},{"id":58,"name":"Danish","button_name":"Danish","price":6.5,"tab":"Food","subcategory":"Muffins, Fruit & Breakfast","has_mods":false,"active":true},{"id":59,"name":"Muesli Bar","button_name":"Muesli Bar","price":6.2,"tab":"Food","subcategory":"Muffins, Fruit & Breakfast","has_mods":false,"active":true},{"id":60,"name":"Power Bite","button_name":"Power Bite","price":4.9,"tab":"Food","subcategory":"Muffins, Fruit & Breakfast","has_mods":false,"active":true},{"id":61,"name":"Shortbread Cookies","button_name":"Shortbread Cookie","price":4.9,"tab":"Food","subcategory":"Muffins, Fruit & Breakfast","has_mods":false,"active":true},{"id":62,"name":"Gingerbread Cookie","button_name":"Gingerbread Cookie","price":4.5,"tab":"Food","subcategory":"Muffins, Fruit & Breakfast","has_mods":false,"active":true},{"id":63,"name":"Choc Chip Cookie","button_name":"Choc Chip Cookie","price":2.9,"tab":"Food","subcategory":"Muffins, Fruit & Breakfast","has_mods":false,"active":true},{"id":64,"name":"Cookie Packet","button_name":"Cookie Packet","price":10.0,"tab":"Food","subcategory":"Muffins, Fruit & Breakfast","has_mods":false,"active":true},{"id":65,"name":"Afghan","button_name":"Afghan","price":5.9,"tab":"Food","subcategory":"Muffins, Fruit & Breakfast","has_mods":false,"active":true},{"id":66,"name":"Anzac cookie","button_name":"Anzac cookie","price":3.9,"tab":"Food","subcategory":"Muffins, Fruit & Breakfast","has_mods":false,"active":true},{"id":67,"name":"5 Seed Cookie","button_name":"5 Seed Cookie","price":3.7,"tab":"Food","subcategory":"Muffins, Fruit & Breakfast","has_mods":false,"active":true},{"id":68,"name":"M&M Cookie","button_name":"M&M Cookie","price":2.9,"tab":"Food","subcategory":"Muffins, Fruit & Breakfast","has_mods":false,"active":true},{"id":69,"name":"Kransky Puff","button_name":"Kransky Puff","price":4.9,"tab":"Food","subcategory":"Savoury","has_mods":false,"active":true},{"id":70,"name":"Firecracker","button_name":"Firecracker","price":4.9,"tab":"Food","subcategory":"Savoury","has_mods":false,"active":true},{"id":71,"name":"Cheese Roll","button_name":"Cheese Roll","price":3.9,"tab":"Food","subcategory":"Savoury","has_mods":false,"active":true},{"id":72,"name":"Large Sausage Roll","button_name":"Large Sausage Roll","price":10.9,"tab":"Food","subcategory":"Savoury","has_mods":false,"active":true},{"id":73,"name":"Small Sausage Roll","button_name":"Small Sausage Roll","price":6.9,"tab":"Food","subcategory":"Savoury","has_mods":false,"active":true},{"id":74,"name":"Croissant","button_name":"Croissant","price":13.9,"tab":"Food","subcategory":"Savoury","has_mods":false,"active":true},{"id":75,"name":"Ciabatta","button_name":"Ciabatta","price":12.9,"tab":"Food","subcategory":"Savoury","has_mods":false,"active":true},{"id":76,"name":"Burger","button_name":"Burger","price":15.9,"tab":"Food","subcategory":"Savoury","has_mods":false,"active":true},{"id":77,"name":"Savoury Pie","button_name":"Savoury Pie","price":9.5,"tab":"Food","subcategory":"Savoury","has_mods":false,"active":true},{"id":78,"name":"Frittata","button_name":"Frittata","price":11.9,"tab":"Food","subcategory":"Savoury","has_mods":false,"active":true},{"id":79,"name":"Bagel","button_name":"Bagel","price":12.9,"tab":"Food","subcategory":"Savoury","has_mods":false,"active":true},{"id":80,"name":"Toastie- 2 Fillings","button_name":"Toastie- 2 Fillings","price":9.9,"tab":"Food","subcategory":"Savoury","has_mods":false,"active":true},{"id":81,"name":"Sandwich","button_name":"Sandwich","price":9.9,"tab":"Food","subcategory":"Savoury","has_mods":false,"active":true},{"id":82,"name":"Filled Roll","button_name":"Filled Roll","price":9.9,"tab":"Food","subcategory":"Savoury","has_mods":false,"active":true},{"id":83,"name":"Wrap","button_name":"Wrap","price":7.5,"tab":"Food","subcategory":"Savoury","has_mods":false,"active":true},{"id":84,"name":"Salad","button_name":"Salad","price":9.9,"tab":"Food","subcategory":"Savoury","has_mods":false,"active":true},{"id":85,"name":"Small Salad","button_name":"Small Salad","price":7.9,"tab":"Food","subcategory":"Savoury","has_mods":false,"active":true},{"id":86,"name":"Side Salad","button_name":"Side Salad","price":6.0,"tab":"Food","subcategory":"Savoury","has_mods":false,"active":true},{"id":87,"name":"Roti Bread","button_name":"Roti Bread","price":5.5,"tab":"Food","subcategory":"Savoury","has_mods":false,"active":true},{"id":88,"name":"Space Man","button_name":"Space Man","price":1.9,"tab":"Food","subcategory":"Extras","has_mods":false,"active":true},{"id":89,"name":"Rasp Licorice","button_name":"Rasp Licorice","price":2.5,"tab":"Food","subcategory":"Extras","has_mods":false,"active":true},{"id":90,"name":"Peanut Slab","button_name":"Peanut Slab","price":2.9,"tab":"Food","subcategory":"Extras","has_mods":false,"active":true},{"id":91,"name":"Whittakers Choc Bar","button_name":"Whittakers Choc Ba","price":2.5,"tab":"Food","subcategory":"Extras","has_mods":false,"active":true},{"id":92,"name":"Toffee","button_name":"Toffee","price":1.9,"tab":"Food","subcategory":"Extras","has_mods":false,"active":true},{"id":93,"name":"Muesli 90gm","button_name":"Muesli 90gm","price":4.9,"tab":"Food","subcategory":"Extras","has_mods":false,"active":true},{"id":94,"name":"Muesli 400gm","button_name":"Muesli 400gm","price":14.9,"tab":"Food","subcategory":"Extras","has_mods":false,"active":true},{"id":95,"name":"Soup Have Here","button_name":"Soup Have Here","price":13.9,"tab":"Food","subcategory":"Hot Meals","has_mods":false,"active":true},{"id":96,"name":"Beef Curry","button_name":"Beef Curry","price":17.9,"tab":"Food","subcategory":"Hot Meals","has_mods":false,"active":true},{"id":97,"name":"Butter Chicken","button_name":"Butter Chicken","price":19.9,"tab":"Food","subcategory":"Hot Meals","has_mods":false,"active":true},{"id":98,"name":"Thai Red Curry","button_name":"Red Curry","price":19.9,"tab":"Food","subcategory":"Hot Meals","has_mods":false,"active":true},{"id":99,"name":"Green Curry","button_name":"Green Curry","price":19.9,"tab":"Food","subcategory":"Hot Meals","has_mods":false,"active":true},{"id":100,"name":"Veggie Curry","button_name":"Veggie Curry","price":17.9,"tab":"Food","subcategory":"Hot Meals","has_mods":false,"active":true},{"id":101,"name":"Tamarind Curry","button_name":"Tamarind Curry","price":17.9,"tab":"Food","subcategory":"Hot Meals","has_mods":false,"active":true},{"id":102,"name":"Prawn Curry","button_name":"Prawn Curry","price":17.9,"tab":"Food","subcategory":"Hot Meals","has_mods":false,"active":true},{"id":103,"name":"Bolognese Small","button_name":"Bolognese Regular","price":15.0,"tab":"Food","subcategory":"Hot Meals","has_mods":false,"active":true},{"id":104,"name":"Moussaka Single","button_name":"Moussaka Single","price":15.9,"tab":"Food","subcategory":"Hot Meals","has_mods":false,"active":true},{"id":105,"name":"Spaghetti Meatballs","button_name":"Spaghetti Meatballs","price":15.9,"tab":"Food","subcategory":"Hot Meals","has_mods":false,"active":true},{"id":106,"name":"Mac & Cheese","button_name":"Mac & Cheese","price":17.9,"tab":"Food","subcategory":"Hot Meals","has_mods":false,"active":true},{"id":107,"name":"Lasagne Single","button_name":"Lasagne Single","price":21.9,"tab":"Freezer Meals","subcategory":"Singles","has_mods":false,"active":true},{"id":108,"name":"Pasta Sauce","button_name":"Pasta Sauce","price":12.9,"tab":"Freezer Meals","subcategory":"Singles","has_mods":false,"active":true},{"id":109,"name":"Single Veggie Lasagne","button_name":"Single Veggie Lasagn","price":19.9,"tab":"Freezer Meals","subcategory":"Singles","has_mods":false,"active":true},{"id":110,"name":"Single Fish Pie","button_name":"Single Fish Pie","price":19.9,"tab":"Freezer Meals","subcategory":"Singles","has_mods":false,"active":true},{"id":111,"name":"Single Cottage Pie","button_name":"Single Cottage Pie","price":18.9,"tab":"Freezer Meals","subcategory":"Singles","has_mods":false,"active":true},{"id":112,"name":"Thai Red Curry Single","button_name":"Red Curry","price":19.9,"tab":"Freezer Meals","subcategory":"Singles","has_mods":false,"active":true},{"id":113,"name":"Veggie Curry Single","button_name":"Veggie Curry","price":17.9,"tab":"Freezer Meals","subcategory":"Singles","has_mods":false,"active":true},{"id":114,"name":"Green Curry Single","button_name":"Green Curry","price":19.9,"tab":"Freezer Meals","subcategory":"Singles","has_mods":false,"active":true},{"id":115,"name":"Beef Curry Single","button_name":"Beef Curry","price":17.9,"tab":"Freezer Meals","subcategory":"Singles","has_mods":false,"active":true},{"id":116,"name":"Bolognese Regular","button_name":"Bolognese Regular","price":15.0,"tab":"Freezer Meals","subcategory":"Singles","has_mods":false,"active":true},{"id":117,"name":"Butter Chicken Single","button_name":"Butter Chicken","price":19.9,"tab":"Freezer Meals","subcategory":"Singles","has_mods":false,"active":true},{"id":118,"name":"Mac & Cheese Single","button_name":"Mac & Cheese","price":17.9,"tab":"Freezer Meals","subcategory":"Singles","has_mods":false,"active":true},{"id":119,"name":"Spaghetti Meatballs","button_name":"Spaghetti Meatballs","price":15.9,"tab":"Freezer Meals","subcategory":"Singles","has_mods":false,"active":true},{"id":120,"name":"Texas Chili Small","button_name":"Texas Chili Small","price":15.0,"tab":"Freezer Meals","subcategory":"Singles","has_mods":false,"active":true},{"id":121,"name":"Frozen Pie","button_name":"Frozen Pie","price":6.5,"tab":"Freezer Meals","subcategory":"Singles","has_mods":false,"active":true},{"id":122,"name":"Single Cannelloni","button_name":"Single Cannelloni","price":16.9,"tab":"Freezer Meals","subcategory":"Singles","has_mods":false,"active":true},{"id":123,"name":"Moussaka Single","button_name":"Moussaka Single","price":15.9,"tab":"Freezer Meals","subcategory":"Singles","has_mods":false,"active":true},{"id":124,"name":"Lasagne Double","button_name":"Lasagne Double","price":38.9,"tab":"Freezer Meals","subcategory":"Doubles","has_mods":false,"active":true},{"id":125,"name":"Double Cannelloni","button_name":"Double Cannelloni","price":27.9,"tab":"Freezer Meals","subcategory":"Doubles","has_mods":false,"active":true},{"id":126,"name":"Double Veggie Lasagne","button_name":"Double Veggie Lasag","price":34.9,"tab":"Freezer Meals","subcategory":"Doubles","has_mods":false,"active":true},{"id":127,"name":"Large Cottage Pie","button_name":"Large Cottage Pie","price":33.9,"tab":"Freezer Meals","subcategory":"Doubles","has_mods":false,"active":true},{"id":128,"name":"Large Mac n Cheese","button_name":"Large Mac n Cheese","price":29.9,"tab":"Freezer Meals","subcategory":"Doubles","has_mods":false,"active":true},{"id":129,"name":"Bolognese Large","button_name":"Bolognese Large","price":25.0,"tab":"Freezer Meals","subcategory":"Doubles","has_mods":false,"active":true},{"id":130,"name":"Green Curry Large","button_name":"Green Curr","price":34.9,"tab":"Freezer Meals","subcategory":"Doubles","has_mods":false,"active":true},{"id":131,"name":"Fish Pie Large","button_name":"Fish Pie L","price":34.9,"tab":"Freezer Meals","subcategory":"Doubles","has_mods":false,"active":true},{"id":132,"name":"Pasta Sauce Large","button_name":"Pasta Sauc","price":17.9,"tab":"Freezer Meals","subcategory":"Doubles","has_mods":false,"active":true},{"id":133,"name":"Texas Chilli Large","button_name":"Texas Chilli Large","price":25.0,"tab":"Freezer Meals","subcategory":"Doubles","has_mods":false,"active":true},{"id":134,"name":"Frozen Soup Veggie","button_name":"Frozen Soup Veggie","price":10.9,"tab":"Freezer Meals","subcategory":"Soup","has_mods":false,"active":true},{"id":135,"name":"Frozen Soup Meat","button_name":"Frozen Soup Meat","price":12.9,"tab":"Freezer Meals","subcategory":"Soup","has_mods":false,"active":true},{"id":136,"name":"Coke","button_name":"Coke","price":5.5,"tab":"Cold Drinks","subcategory":"Fridge drinks","has_mods":false,"active":true},{"id":137,"name":"Red Bull/V","button_name":"Red Bull/V","price":5.5,"tab":"Cold Drinks","subcategory":"Fridge drinks","has_mods":false,"active":true},{"id":138,"name":"Large RedBull","button_name":"Large RedBull","price":7.8,"tab":"Cold Drinks","subcategory":"Fridge drinks","has_mods":false,"active":true},{"id":139,"name":"Pump Water","button_name":"Pump Water","price":5.5,"tab":"Cold Drinks","subcategory":"Fridge drinks","has_mods":false,"active":true},{"id":140,"name":"Sparkling Water","button_name":"Sparkling Water","price":4.5,"tab":"Cold Drinks","subcategory":"Fridge drinks","has_mods":false,"active":true},{"id":141,"name":"Bundaberg","button_name":"Bundaberg","price":5.5,"tab":"Cold Drinks","subcategory":"Fridge drinks","has_mods":false,"active":true},{"id":142,"name":"Aloe","button_name":"Aloe","price":5.5,"tab":"Cold Drinks","subcategory":"Fridge drinks","has_mods":false,"active":true},{"id":143,"name":"Organic Orange","button_name":"Organic Orange","price":7.8,"tab":"Cold Drinks","subcategory":"Fridge drinks","has_mods":false,"active":true},{"id":144,"name":"Seedy","button_name":"Seedy","price":7.8,"tab":"Cold Drinks","subcategory":"Fridge drinks","has_mods":false,"active":true},{"id":145,"name":"Fridge Smoothie","button_name":"Fridge Smoothie","price":8.5,"tab":"Cold Drinks","subcategory":"Fridge drinks","has_mods":false,"active":true},{"id":146,"name":"Kombucha","button_name":"Kombucha","price":6.2,"tab":"Cold Drinks","subcategory":"Fridge drinks","has_mods":false,"active":true},{"id":147,"name":"Almighty","button_name":"Almighty","price":7.8,"tab":"Cold Drinks","subcategory":"Fridge drinks","has_mods":false,"active":true},{"id":148,"name":"Remedy","button_name":"Remedy","price":7.8,"tab":"Cold Drinks","subcategory":"Fridge drinks","has_mods":false,"active":true},{"id":149,"name":"Gatorade","button_name":"Gatorade","price":7.8,"tab":"Cold Drinks","subcategory":"Fridge drinks","has_mods":false,"active":true},{"id":150,"name":"Foxton Fizz","button_name":"Foxton Fizz","price":5.5,"tab":"Cold Drinks","subcategory":"Fridge drinks","has_mods":false,"active":true},{"id":151,"name":"Mela Juice","button_name":"Mela Juice","price":6.2,"tab":"Cold Drinks","subcategory":"Fridge drinks","has_mods":false,"active":true},{"id":152,"name":"Juice 1 Litre","button_name":"Juice 1 Litre","price":6.5,"tab":"Cold Drinks","subcategory":"Fridge drinks","has_mods":false,"active":true},{"id":153,"name":"Kids Juice","button_name":"Kids Juice","price":3.5,"tab":"Cold Drinks","subcategory":"Fridge drinks","has_mods":false,"active":true},{"id":154,"name":"Berry Smoothie","button_name":"Berry Smoothie","price":9.5,"tab":"Cold Drinks","subcategory":"Smoothies","has_mods":false,"active":true},{"id":155,"name":"Banana Smoothie","button_name":"Banana Smoothie","price":9.5,"tab":"Cold Drinks","subcategory":"Smoothies","has_mods":false,"active":true},{"id":156,"name":"Mango Smoothie","button_name":"Mango Smoothie","price":9.5,"tab":"Cold Drinks","subcategory":"Smoothies","has_mods":false,"active":true},{"id":157,"name":"Milkshake","button_name":"Milkshake","price":8.5,"tab":"Cold Drinks","subcategory":"Milkshakes","has_mods":false,"active":true},{"id":158,"name":"Iced Coffee (Black)","button_name":"Iced Coffee (Black)","price":6.9,"tab":"Cold Drinks","subcategory":"Iced Drinks","has_mods":false,"active":true},{"id":159,"name":"Iced Coffee White","button_name":"Iced Coffee (White)","price":8.5,"tab":"Cold Drinks","subcategory":"Iced Drinks","has_mods":false,"active":true},{"id":160,"name":"Iced Chocolate","button_name":"Iced Chocolate","price":8.5,"tab":"Cold Drinks","subcategory":"Iced Drinks","has_mods":false,"active":true},{"id":161,"name":"Iced Mocha","button_name":"Iced Mocha","price":9.0,"tab":"Cold Drinks","subcategory":"Iced Drinks","has_mods":false,"active":true},{"id":162,"name":"Relish","button_name":"Relish","price":10.9,"tab":"Catering & Misc","subcategory":"Misc","has_mods":false,"active":true},{"id":163,"name":"Lemon Curd","button_name":"LemonCurd","price":8.9,"tab":"Catering & Misc","subcategory":"Misc","has_mods":false,"active":true},{"id":164,"name":"Quince Jelly","button_name":"Quince Jelly","price":8.9,"tab":"Catering & Misc","subcategory":"Misc","has_mods":false,"active":true},{"id":165,"name":"Coffee Beans 200gm","button_name":"Coffee Beans 200gm","price":14.5,"tab":"Catering & Misc","subcategory":"Misc","has_mods":false,"active":true},{"id":166,"name":"Coffee Beans 1kg","button_name":"Coffee Beans 1kg","price":59.5,"tab":"Catering & Misc","subcategory":"Misc","has_mods":false,"active":true},{"id":167,"name":"Glass Keep Cup","button_name":"Glass Keep Cup","price":39.0,"tab":"Catering & Misc","subcategory":"Misc","has_mods":false,"active":true},{"id":168,"name":"Plastic Keep Cup","button_name":"Plastic Keep Cup","price":25.9,"tab":"Catering & Misc","subcategory":"Misc","has_mods":false,"active":true},{"id":169,"name":"Spice Mix","button_name":"Spice Mix","price":8.9,"tab":"Catering & Misc","subcategory":"Misc","has_mods":false,"active":true},{"id":170,"name":"Catering","button_name":"Catering","price":1.0,"tab":"Catering & Misc","subcategory":"Catering","has_mods":false,"active":true},{"id":171,"name":"3D Printing","button_name":"3D Printing","price":1.0,"tab":"Catering & Misc","subcategory":"Catering","has_mods":false,"active":true},{"id":172,"name":"Xmas pie","button_name":"Xmas pie","price":6.5,"tab":"Catering & Misc","subcategory":"Xmas","has_mods":false,"active":true},{"id":173,"name":"12 Xmas Pies Wrapped","button_name":"12 Xmas Pies Wrappe","price":35.9,"tab":"Catering & Misc","subcategory":"Xmas","has_mods":false,"active":true},{"id":174,"name":"12 Xmas Pies","button_name":"12 Xmas Pies","price":29.9,"tab":"Catering & Misc","subcategory":"Xmas","has_mods":false,"active":true},{"id":175,"name":"6 Xmas Pies Wrapped","button_name":"6 Xmas Pies Wrapped","price":23.9,"tab":"Catering & Misc","subcategory":"Xmas","has_mods":false,"active":true},{"id":176,"name":"6 Xmas pies","button_name":"6 Xmas pies","price":14.9,"tab":"Catering & Misc","subcategory":"Xmas","has_mods":false,"active":true},{"id":177,"name":"Xmas Cake","button_name":"Xmas Cake","price":14.9,"tab":"Catering & Misc","subcategory":"Xmas","has_mods":false,"active":true}];
 
 const MODS_DATA = [
@@ -690,10 +316,11 @@ const MODS_DATA = [
 ];
 
 const TABS = ["Coffee","Food","Cold Drinks","Freezer Meals","Catering & Misc"];
-const ADMIN_PIN = "1234";
+const ADMIN_PIN = "1234"; // Change this!
 const BUSINESS = { name:"Sfizio Ltd", address:"104 Wadestown Road, Wellington 6012", phone:"04-473-4916", gst:"102-355-539" };
 const GST_RATE = 0.15;
 
+// ─── STATE ──────────────────────────────────────────────────────────────────
 let menu = [...MENU_DATA];
 let activeTab = TABS[0];
 let orders = [{ id: 1, name: "Tab 1", items: [] }];
@@ -702,82 +329,394 @@ let pendingItem = null;
 let selectedMods = [];
 let payMethod = '';
 
-// --- NEW: Resizable order panel ---
-function initResizable() {
-  const handle = document.getElementById('resize-handle');
-  const orderPanel = document.getElementById('order-panel');
-  if (!handle || !orderPanel) return;
-  let startX = 0, startWidth = 0;
-
-  // Load saved width from localStorage
-  const saved = localStorage.getItem('order_panel_width');
-  if (saved && !isNaN(parseInt(saved))) {
-    let w = Math.min(Math.max(parseInt(saved), 200), 500);
-    document.documentElement.style.setProperty('--order-w', w + 'px');
-  }
-
-  function onPointerMove(e) {
-    let newWidth = startWidth + (startX - e.clientX);
-    newWidth = Math.min(Math.max(newWidth, 200), 500);
-    document.documentElement.style.setProperty('--order-w', newWidth + 'px');
-  }
-
-  function onPointerUp() {
-    const final = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--order-w'));
-    localStorage.setItem('order_panel_width', final);
-    window.removeEventListener('pointermove', onPointerMove);
-    window.removeEventListener('pointerup', onPointerUp);
-    document.body.style.userSelect = '';
-  }
-
-  function onPointerDown(e) {
-    e.preventDefault();
-    startX = e.clientX;
-    startWidth = parseInt(getComputedStyle(orderPanel).width);
-    document.body.style.userSelect = 'none';
-    window.addEventListener('pointermove', onPointerMove);
-    window.addEventListener('pointerup', onPointerUp);
-  }
-
-  handle.addEventListener('pointerdown', onPointerDown);
+// ─── INIT ────────────────────────────────────────────────────────────────────
+function init() {
+  // Load saved menu from localStorage if exists
+  const saved = localStorage.getItem('sfizio_menu');
+  if (saved) { try { menu = JSON.parse(saved); } catch(e){} }
+  renderTabs();
+  renderMenu();
+  renderOrderPanel();
 }
 
-// --- All existing POS functions (unchanged, except init() calls initResizable) ---
-function init() { const saved = localStorage.getItem('sfizio_menu'); if (saved) { try { menu = JSON.parse(saved); } catch(e){} } renderTabs(); renderMenu(); renderOrderPanel(); initResizable(); }
-function renderTabs() { const el = document.getElementById('tabs'); el.innerHTML = TABS.map(t => `<button class="tab-btn ${t===activeTab?'active':''}" onclick="switchTab('${t}')">${t}</button>`).join(''); }
-function switchTab(t) { activeTab = t; renderTabs(); renderMenu(); }
-function renderMenu() { const el = document.getElementById('menu-area'); const items = menu.filter(i => i.tab === activeTab && i.active); const subcats = [...new Set(items.map(i => i.subcategory))]; el.innerHTML = subcats.map(sub => { const subItems = items.filter(i => i.subcategory === sub); return `<div class="subcat-label">${sub}</div><div class="item-grid">${subItems.map(item => `<button class="item-btn ${item.has_mods?'has-mods':''}" onclick="handleItemClick(${item.id})"><span class="btn-name">${item.button_name}</span><span class="btn-price">$${item.price.toFixed(2)}</span></button>`).join('')}</div>`; }).join(''); }
-function handleItemClick(id) { const item = menu.find(i => i.id === id); if (!item) return; if (item.has_mods) openModsModal(item); else addToOrder(item, []); }
-function openModsModal(item) { pendingItem = item; selectedMods = []; document.getElementById('modal-item-name').textContent = item.name; document.getElementById('modal-base-price').textContent = `Base: $${item.price.toFixed(2)}`; const groups = [...new Set(MODS_DATA.map(m => m.category))]; document.getElementById('mods-scroll').innerHTML = groups.map(g => { const mods = MODS_DATA.filter(m => m.category === g); return `<div class="mod-group-label">${g}</div><div class="mods-grid">${mods.map(m => `<div class="mod-btn" id="mod-${m.name.replace(/\s/g,'_')}" onclick="toggleMod('${m.name}')"><div class="mod-name">${m.name}</div><div class="mod-price">${m.price > 0 ? '+$'+m.price.toFixed(2) : '—'}</div></div>`).join('')}</div>`; }).join(''); updateModalPrice(); document.getElementById('modal-overlay').classList.add('open'); }
-function toggleMod(name) { const mod = MODS_DATA.find(m => m.name === name); const idx = selectedMods.findIndex(m => m.name === name); if (idx >= 0) { selectedMods.splice(idx, 1); document.getElementById('mod-'+name.replace(/\s/g,'_')).classList.remove('selected'); } else { selectedMods.push(mod); document.getElementById('mod-'+name.replace(/\s/g,'_')).classList.add('selected'); } updateModalPrice(); }
-function updateModalPrice() { const total = pendingItem.price + selectedMods.reduce((s, m) => s + m.price, 0); document.getElementById('modal-total-price').textContent = '$' + total.toFixed(2); }
-function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); pendingItem = null; selectedMods = []; }
-function confirmAddItem() { if (!pendingItem) return; addToOrder(pendingItem, [...selectedMods]); closeModal(); }
-function addToOrder(item, mods) { const price = item.price + mods.reduce((s,m) => s+m.price, 0); orders[activeOrderIdx].items.push({ item, mods, price, uid: Date.now()+Math.random() }); renderOrderPanel(); }
-function removeFromOrder(uid) { orders[activeOrderIdx].items = orders[activeOrderIdx].items.filter(i => i.uid !== uid); renderOrderPanel(); }
-function renderOrderPanel() { const tabBar = document.getElementById('tab-bar'); tabBar.innerHTML = `<button id="new-tab-btn" onclick="newOrderTab()">+</button>`; orders.forEach((o, idx) => { const btn = document.createElement('button'); btn.className = 'order-tab' + (idx === activeOrderIdx ? ' active' : ''); btn.textContent = o.name; btn.onclick = () => { activeOrderIdx = idx; renderOrderPanel(); }; tabBar.insertBefore(btn, document.getElementById('new-tab-btn')); }); const order = orders[activeOrderIdx]; const el = document.getElementById('order-items'); if (order.items.length === 0) el.innerHTML = '<div class="empty-order">No items yet</div>'; else el.innerHTML = order.items.map(i => `<div class="order-item"><div class="order-item-info"><div class="order-item-name">${i.item.button_name}</div>${i.mods.length ? `<div class="order-item-mods">${i.mods.map(m=>m.name+(m.price>0?' +$'+m.price.toFixed(2):'')).join(', ')}</div>` : ''}</div><div class="order-item-price">$${i.price.toFixed(2)}</div><button class="remove-btn" onclick="removeFromOrder(${i.uid})">✕</button></div>`).join(''); const total = order.items.reduce((s, i) => s + i.price, 0); const gst = total * GST_RATE / (1 + GST_RATE); document.getElementById('subtotal').textContent = '$' + total.toFixed(2); document.getElementById('gst-display').textContent = '$' + gst.toFixed(2); document.getElementById('total-display').textContent = '$' + total.toFixed(2); const totalItems = orders.reduce((s,o) => s+o.items.length, 0); const badge = document.getElementById('order-count'); badge.style.display = totalItems > 0 ? 'inline' : 'none'; badge.textContent = totalItems; }
-function newOrderTab() { document.getElementById('name-input').value = ''; document.getElementById('name-modal').classList.add('open'); setTimeout(() => document.getElementById('name-input').focus(), 100); }
-function confirmTabName() { const name = document.getElementById('name-input').value.trim() || ('Tab ' + (orders.length + 1)); orders.push({ id: Date.now(), name, items: [] }); activeOrderIdx = orders.length - 1; document.getElementById('name-modal').classList.remove('open'); renderOrderPanel(); }
-document.getElementById('name-input')?.addEventListener('keydown', e => { if(e.key==='Enter') confirmTabName(); });
-function voidOrder() { if (!confirm('Void this order?')) return; orders[activeOrderIdx].items = []; renderOrderPanel(); }
-function openPayment(method) { const order = orders[activeOrderIdx]; const total = order.items.reduce((s,i) => s+i.price, 0); if (total === 0) return; payMethod = method; document.getElementById('pay-amount').textContent = '$' + total.toFixed(2); document.getElementById('pay-method-label').textContent = method === 'card' ? '💳 Card Payment' : '💵 Cash Payment'; document.getElementById('pay-instructions').textContent = method === 'card' ? 'Process on EFTPOS terminal, then tap Done.' : 'Collect cash, then tap Done.'; const cashCalc = document.getElementById('cash-calc'); cashCalc.style.display = method === 'cash' ? 'block' : 'none'; document.getElementById('cash-given').value = ''; document.getElementById('change-display').textContent = ''; const toggle = document.getElementById('receipt-toggle'); toggle.checked = false; updateReceiptSlider(); document.getElementById('pay-modal').classList.add('open'); }
-function updateDocketSlider() { const toggle = document.getElementById('docket-toggle'); const slider = document.getElementById('docket-slider'); const knob = document.getElementById('docket-knob'); if (toggle.checked) { slider.style.background = '#0ff'; knob.style.transform = 'translateX(22px)'; } else { slider.style.background = '#3a3a4a'; knob.style.transform = 'translateX(0)'; } }
-function updateReceiptSlider() { const toggle = document.getElementById('receipt-toggle'); const slider = document.getElementById('receipt-slider'); const knob = document.getElementById('receipt-knob'); if (toggle.checked) { slider.style.background = '#0ff'; knob.style.transform = 'translateX(22px)'; } else { slider.style.background = '#3a3a4a'; knob.style.transform = 'translateX(0)'; } }
-function completePay() { const order = orders[activeOrderIdx]; const total = order.items.reduce((s,i) => s+i.price, 0); const wantReceipt = document.getElementById('receipt-toggle').checked; const wantDocket = document.getElementById('docket-toggle').checked; if (wantDocket) printDocket(order); if (wantReceipt) printReceipt(order, total, payMethod); }
-function sendToPassPRNT(html) { const passprntUrl = 'starpassprnt://v1/print/nopreview?port=' + encodeURIComponent('TCP:192.168.1.2') + '&back=' + encodeURIComponent(window.location.href) + '&html=' + encodeURIComponent(html) + '&size=576'; window.location.href = passprntUrl; }
-function printDocket(order) { const TAB_ORDER = ['Coffee','Food','Cold Drinks','Freezer Meals','Catering & Misc']; const orderNum = Date.now().toString().slice(-6); let rows = ''; TAB_ORDER.forEach(tab => { const tabItems = order.items.filter(i => i.item.tab === tab); tabItems.forEach(i => { rows += `<tr><td>${i.item.button_name}</td></tr>`; if (i.mods.length) { i.mods.filter(m=>m.name).forEach(m => { rows += `<tr><td style="padding-left:10px;font-size:11px">+ ${m.name}</td></tr>`; }); } }); }); const docketHtml = `<html><head><meta name="format-detection" content="telephone=no"><style>body{font-family:monospace;font-size:14px;width:72mm;margin:0;padding:4px;}h2{font-size:18px;text-align:center;font-weight:bold;margin:2px 0;}hr{border:none;border-top:2px solid #000;margin:4px 0;}table{width:100%;border-collapse:collapse;}td{padding:2px 3px;}</style></head><body><hr><h2>ORDER #${orderNum}</h2><hr><table>${rows}</table><hr></body></html>`; sendToPassPRNT(docketHtml); }
-function printReceipt(order, total, method) { const gst = total * GST_RATE / (1 + GST_RATE); const now = new Date(); const dateStr = now.toLocaleDateString('en-NZ',{day:'2-digit',month:'short',year:'numeric'}) + ', ' + now.toLocaleTimeString('en-NZ',{hour:'2-digit',minute:'2-digit'}); const orderNum = Date.now().toString().slice(-6); let rows = ''; order.items.forEach(i => { rows += `<tr><td style="text-align:left">${i.item.button_name}</td><td style="text-align:right">$${i.price.toFixed(2)}</td></tr>`; if (i.mods.length) { i.mods.filter(m=>m.name).forEach(m => { rows += `<tr><td style="text-align:left;padding-left:12px;font-size:11px">${m.name}</td><td style="text-align:right;font-size:11px">${m.price>0?'+$'+m.price.toFixed(2):''}</td></tr>`; }); } }); const tabName = (order.name && order.name !== 'Tab 1') ? `<p>${order.name}</p>` : ''; const receiptHtml = `<html><head><meta name="format-detection" content="telephone=no"><style>body { font-family: monospace; font-size: 13px; width: 72mm; margin: 0; padding: 4px; } h2 { font-size: 14px; text-align: center; margin: 2px 0; } p { text-align: center; margin: 1px 0; font-size: 12px; } hr { border: none; border-top: 1px dashed #000; margin: 4px 0; } table { width: 100%; border-collapse: collapse; } td { padding: 1px 2px; } .total-row td { font-weight: bold; border-top: 1px dashed #000; padding-top: 3px; } .gst-row td { font-size: 11px; } .thanks { text-align: center; margin-top: 6px; font-size: 12px; }</style></head><body><h2>${BUSINESS.name}</h2><p>${BUSINESS.phone}</p><p>${BUSINESS.address}</p><p>GST ${BUSINESS.gst}</p><hr><p>${dateStr}</p><p>Order #${orderNum}</p>${tabName}<hr><table>${rows}<tr class="total-row"><td>Total</td><td style="text-align:right">$${total.toFixed(2)}</td></tr><tr class="gst-row"><td colspan="2" style="text-align:center">Includes GST of $${gst.toFixed(2)}</td></tr><tr><td>${method==='card'?'Card Payment':'Cash Payment'}</td><td style="text-align:right">$${total.toFixed(2)}</td></tr></table><hr><p class="thanks">Thank you!</p></body></html>`; sendToPassPRNT(receiptHtml); }
-function openAdmin() { document.getElementById('admin-panel').classList.add('open'); document.getElementById('pin-screen').style.display = 'flex'; document.getElementById('admin-content').classList.remove('visible'); document.getElementById('pin-input').value = ''; document.getElementById('pin-error').textContent = ''; }
-function closeAdmin() { document.getElementById('admin-panel').classList.remove('open'); }
-function checkPin(val) { const currentPin = localStorage.getItem('admin_pin') || ADMIN_PIN; if (val.length === 4) { if (val === currentPin) { document.getElementById('pin-screen').style.display = 'none'; document.getElementById('admin-content').classList.add('visible'); renderAdminItems(); } else { document.getElementById('pin-error').textContent = 'Incorrect PIN'; document.getElementById('pin-input').value = ''; } } }
-function renderAdminItems() { const el = document.getElementById('admin-items-list'); const byTab = {}; TABS.forEach(t => byTab[t] = menu.filter(i => i.tab === t)); el.innerHTML = TABS.map(t => `<div style="margin-bottom:20px"><div class="subcat-label" style="margin-bottom:8px">${t}</div>${byTab[t].map(item => `<div class="admin-item-row" id="arow-${item.id}"><input class="ai-name" value="${item.name}" onchange="updateItem(${item.id},'name',this.value)"><input class="ai-btn" value="${item.button_name}" onchange="updateItem(${item.id},'button_name',this.value)"><input class="ai-price" type="number" step="0.10" value="${item.price}" onchange="updateItem(${item.id},'price',parseFloat(this.value))"><button class="admin-del" onclick="deleteItem(${item.id})">Del</button></div>`).join('')}</div>`).join(''); }
-function updateItem(id, field, val) { const item = menu.find(i => i.id === id); if (item) { item[field] = val; saveMenu(); renderMenu(); } }
-function deleteItem(id) { if (!confirm('Delete this item?')) return; menu = menu.filter(i => i.id !== id); saveMenu(); renderAdminItems(); renderMenu(); }
-function adminAddItem() { const name = document.getElementById('ni-name').value.trim(); const btn = document.getElementById('ni-btn').value.trim(); const price = parseFloat(document.getElementById('ni-price').value); const tab = document.getElementById('ni-tab').value; const sub = document.getElementById('ni-sub').value.trim() || tab; if (!name || !btn || isNaN(price)) { alert('Fill in all fields'); return; } const newId = Math.max(...menu.map(i=>i.id)) + 1; menu.push({ id:newId, name, button_name:btn, price, tab, subcategory:sub, has_mods: tab==='Coffee', active:true }); saveMenu(); renderAdminItems(); renderMenu(); ['ni-name','ni-btn','ni-price','ni-sub'].forEach(id => document.getElementById(id).value=''); }
-function saveMenu() { localStorage.setItem('sfizio_menu', JSON.stringify(menu)); }
-function changePin() { const np = document.getElementById('new-pin').value; const cp = document.getElementById('confirm-pin').value; const msg = document.getElementById('pin-change-msg'); if (np.length !== 4 || !/^\d{4}$/.test(np)) { msg.style.color='var(--red-neon)'; msg.textContent='PIN must be 4 digits'; return; } if (np !== cp) { msg.style.color='var(--red-neon)'; msg.textContent='PINs do not match'; return; } localStorage.setItem('admin_pin', np); msg.style.color='var(--neon-lime)'; msg.textContent='PIN updated ✓'; document.getElementById('new-pin').value=''; document.getElementById('confirm-pin').value=''; }
-function calcChange() { const owed = orders[activeOrderIdx].items.reduce((s,i) => s+i.price, 0); const given = parseFloat(document.getElementById('cash-given').value); const el = document.getElementById('change-display'); if (isNaN(given) || given < owed) { el.textContent = given > 0 ? 'Not enough' : ''; el.style.color='var(--red-neon)'; return; } const raw = given - owed; const rounded = Math.round(raw * 10) / 10; el.style.color = 'var(--neon-lime)'; el.textContent = 'Change: $' + rounded.toFixed(2); }
+// ─── TABS ────────────────────────────────────────────────────────────────────
+function renderTabs() {
+  const el = document.getElementById('tabs');
+  el.innerHTML = TABS.map(t =>
+    `<button class="tab-btn ${t===activeTab?'active':''}" onclick="switchTab('${t}')">${t}</button>`
+  ).join('');
+}
 
+function switchTab(t) {
+  activeTab = t;
+  renderTabs();
+  renderMenu();
+}
+
+// ─── MENU ────────────────────────────────────────────────────────────────────
+function renderMenu() {
+  const el = document.getElementById('menu-area');
+  const items = menu.filter(i => i.tab === activeTab && i.active);
+  const subcats = [...new Set(items.map(i => i.subcategory))];
+  el.innerHTML = subcats.map(sub => {
+    const subItems = items.filter(i => i.subcategory === sub);
+    return `<div class="subcat-label">${sub}</div>
+      <div class="item-grid">
+        ${subItems.map(item => `
+          <button class="item-btn ${item.has_mods?'has-mods':''}" onclick="handleItemClick(${item.id})">
+            <span class="btn-name">${item.button_name}</span>
+            <span class="btn-price">$${item.price.toFixed(2)}</span>
+          </button>`).join('')}
+      </div>`;
+  }).join('');
+}
+
+function handleItemClick(id) {
+  const item = menu.find(i => i.id === id);
+  if (!item) return;
+  if (item.has_mods) openModsModal(item);
+  else addToOrder(item, []);
+}
+
+// ─── MODS ────────────────────────────────────────────────────────────────────
+function openModsModal(item) {
+  pendingItem = item;
+  selectedMods = [];
+  document.getElementById('modal-item-name').textContent = item.name;
+  document.getElementById('modal-base-price').textContent = `Base: $${item.price.toFixed(2)}`;
+  const groups = [...new Set(MODS_DATA.map(m => m.category))];
+  document.getElementById('mods-scroll').innerHTML = groups.map(g => {
+    const mods = MODS_DATA.filter(m => m.category === g);
+    return `<div class="mod-group-label">${g}</div>
+      <div class="mods-grid">
+        ${mods.map(m => `
+          <div class="mod-btn" id="mod-${m.name.replace(/\s/g,'_')}" onclick="toggleMod('${m.name}')">
+            <div class="mod-name">${m.name}</div>
+            <div class="mod-price">${m.price > 0 ? '+$'+m.price.toFixed(2) : '—'}</div>
+          </div>`).join('')}
+      </div>`;
+  }).join('');
+  updateModalPrice();
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function toggleMod(name) {
+  const mod = MODS_DATA.find(m => m.name === name);
+  const idx = selectedMods.findIndex(m => m.name === name);
+  if (idx >= 0) { selectedMods.splice(idx, 1); document.getElementById('mod-'+name.replace(/\s/g,'_')).classList.remove('selected'); }
+  else { selectedMods.push(mod); document.getElementById('mod-'+name.replace(/\s/g,'_')).classList.add('selected'); }
+  updateModalPrice();
+}
+
+function updateModalPrice() {
+  const total = pendingItem.price + selectedMods.reduce((s, m) => s + m.price, 0);
+  document.getElementById('modal-total-price').textContent = '$' + total.toFixed(2);
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  pendingItem = null; selectedMods = [];
+}
+
+function confirmAddItem() {
+  if (!pendingItem) return;
+  addToOrder(pendingItem, [...selectedMods]);
+  closeModal();
+}
+
+// ─── ORDER ───────────────────────────────────────────────────────────────────
+function addToOrder(item, mods) {
+  const price = item.price + mods.reduce((s,m) => s+m.price, 0);
+  orders[activeOrderIdx].items.push({ item, mods, price, uid: Date.now()+Math.random() });
+  renderOrderPanel();
+}
+
+function removeFromOrder(uid) {
+  orders[activeOrderIdx].items = orders[activeOrderIdx].items.filter(i => i.uid !== uid);
+  renderOrderPanel();
+}
+
+function renderOrderPanel() {
+  // Tabs
+  const tabBar = document.getElementById('tab-bar');
+  tabBar.innerHTML = `<button id="new-tab-btn" onclick="newOrderTab()">+</button>`;
+  orders.forEach((o, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'order-tab' + (idx === activeOrderIdx ? ' active' : '');
+    btn.textContent = o.name;
+    btn.onclick = () => { activeOrderIdx = idx; renderOrderPanel(); };
+    tabBar.insertBefore(btn, tabBar.lastChild ? null : tabBar.firstChild);
+    tabBar.insertBefore(btn, document.getElementById('new-tab-btn'));
+  });
+
+  // Items
+  const order = orders[activeOrderIdx];
+  const el = document.getElementById('order-items');
+  if (order.items.length === 0) {
+    el.innerHTML = '<div class="empty-order">No items yet</div>';
+  } else {
+    el.innerHTML = order.items.map(i => `
+      <div class="order-item">
+        <div class="order-item-info">
+          <div class="order-item-name">${i.item.button_name}</div>
+          ${i.mods.length ? `<div class="order-item-mods">${i.mods.map(m=>m.name+(m.price>0?' +$'+m.price.toFixed(2):'')).join(', ')}</div>` : ''}
+        </div>
+        <div class="order-item-price">$${i.price.toFixed(2)}</div>
+        <button class="remove-btn" onclick="removeFromOrder(${i.uid})">✕</button>
+      </div>`).join('');
+  }
+
+  // Totals
+  const total = order.items.reduce((s, i) => s + i.price, 0);
+  const gst = total * GST_RATE / (1 + GST_RATE);
+  document.getElementById('subtotal').textContent = '$' + total.toFixed(2);
+  document.getElementById('gst-display').textContent = '$' + gst.toFixed(2);
+  document.getElementById('total-display').textContent = '$' + total.toFixed(2);
+
+  // Header badge
+  const totalItems = orders.reduce((s,o) => s+o.items.length, 0);
+  const badge = document.getElementById('order-count');
+  badge.style.display = totalItems > 0 ? 'inline' : 'none';
+  badge.textContent = totalItems;
+}
+
+// ─── ORDER TABS ──────────────────────────────────────────────────────────────
+function newOrderTab() {
+  document.getElementById('name-input').value = '';
+  document.getElementById('name-modal').classList.add('open');
+  setTimeout(() => document.getElementById('name-input').focus(), 100);
+}
+
+function confirmTabName() {
+  const name = document.getElementById('name-input').value.trim() || ('Tab ' + (orders.length + 1));
+  orders.push({ id: Date.now(), name, items: [] });
+  activeOrderIdx = orders.length - 1;
+  document.getElementById('name-modal').classList.remove('open');
+  renderOrderPanel();
+}
+
+document.getElementById('name-input').addEventListener('keydown', e => { if(e.key==='Enter') confirmTabName(); });
+
+function voidOrder() {
+  if (!confirm('Void this order?')) return;
+  orders[activeOrderIdx].items = [];
+  renderOrderPanel();
+}
+
+// ─── PAYMENT ─────────────────────────────────────────────────────────────────
+function openPayment(method) {
+  const order = orders[activeOrderIdx];
+  const total = order.items.reduce((s,i) => s+i.price, 0);
+  if (total === 0) return;
+  payMethod = method;
+  document.getElementById('pay-amount').textContent = '$' + total.toFixed(2);
+  document.getElementById('pay-method-label').textContent = method === 'card' ? '💳 Card Payment' : '💵 Cash Payment';
+  document.getElementById('pay-instructions').textContent = method === 'card' ? 'Process on EFTPOS terminal, then tap Done.' : 'Collect cash, then tap Done.';
+  const cashCalc = document.getElementById('cash-calc');
+  cashCalc.style.display = method === 'cash' ? 'block' : 'none';
+  document.getElementById('cash-given').value = '';
+  document.getElementById('change-display').textContent = '';
+  // Reset receipt toggle to off each time
+  const toggle = document.getElementById('receipt-toggle');
+  toggle.checked = false;
+  updateReceiptSlider();
+  document.getElementById('pay-modal').classList.add('open');
+}
+
+function updateReceiptSlider() {
+  const toggle = document.getElementById('receipt-toggle');
+  const slider = document.getElementById('receipt-slider');
+  const knob = document.getElementById('receipt-knob');
+  if (toggle.checked) {
+    slider.style.background = '#8fbf82';
+    knob.style.transform = 'translateX(22px)';
+  } else {
+    slider.style.background = '#3a3a3a';
+    knob.style.transform = 'translateX(0)';
+  }
+}
+
+function completePay() {
+  const order = orders[activeOrderIdx];
+  const total = order.items.reduce((s,i) => s+i.price, 0);
+  const wantReceipt = document.getElementById('receipt-toggle').checked;
+  if (wantReceipt) printReceipt(order, total, payMethod);
+  // Close tab or reset
+  if (orders.length > 1) {
+    orders.splice(activeOrderIdx, 1);
+    activeOrderIdx = Math.max(0, activeOrderIdx - 1);
+  } else {
+    orders[0] = { id: Date.now(), name: 'Tab 1', items: [] };
+    activeOrderIdx = 0;
+  }
+  document.getElementById('pay-modal').classList.remove('open');
+  renderOrderPanel();
+}
+
+// ─── PRINTING ────────────────────────────────────────────────────────────────
+function printReceipt(order, total, method) {
+  const gst = total * GST_RATE / (1 + GST_RATE);
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-NZ',{day:'2-digit',month:'short',year:'numeric'}) + ', ' + now.toLocaleTimeString('en-NZ',{hour:'2-digit',minute:'2-digit'});
+  const orderNum = Date.now().toString().slice(-6);
+
+  // Build receipt as HTML for PassPRNT
+  // PassPRNT renders HTML and sends it to the Star printer — no CORS, no mixed content issues
+  let rows = '';
+  order.items.forEach(i => {
+    rows += `<tr><td style="text-align:left">${i.item.button_name}</td><td style="text-align:right">$${i.price.toFixed(2)}</td></tr>`;
+    if (i.mods.length) {
+      i.mods.filter(m=>m.name).forEach(m => {
+        rows += `<tr><td style="text-align:left;padding-left:12px;font-size:11px">${m.name}</td><td style="text-align:right;font-size:11px">${m.price>0?'+$'+m.price.toFixed(2):''}</td></tr>`;
+      });
+    }
+  });
+
+  const tabName = (order.name && order.name !== 'Tab 1') ? `<p>${order.name}</p>` : '';
+
+  const receiptHtml = `<html><head>
+<meta name="format-detection" content="telephone=no">
+<style>
+  body { font-family: monospace; font-size: 13px; width: 72mm; margin: 0; padding: 4px; }
+  h2 { font-size: 14px; text-align: center; margin: 2px 0; }
+  p { text-align: center; margin: 1px 0; font-size: 12px; }
+  hr { border: none; border-top: 1px dashed #000; margin: 4px 0; }
+  table { width: 100%; border-collapse: collapse; }
+  td { padding: 1px 2px; }
+  .total-row td { font-weight: bold; border-top: 1px dashed #000; padding-top: 3px; }
+  .gst-row td { font-size: 11px; }
+  .thanks { text-align: center; margin-top: 6px; font-size: 12px; }
+</style>
+</head><body>
+<h2>${BUSINESS.name}</h2>
+<p>${BUSINESS.phone}</p>
+<p>${BUSINESS.address}</p>
+<p>GST ${BUSINESS.gst}</p>
+<hr>
+<p>${dateStr}</p>
+<p>Order #${orderNum}</p>
+${tabName}
+<hr>
+<table>
+${rows}
+<tr class="total-row"><td>Total</td><td style="text-align:right">$${total.toFixed(2)}</td></tr>
+<tr class="gst-row"><td colspan="2" style="text-align:center">Includes GST of $${gst.toFixed(2)}</td></tr>
+<tr><td>${method==='card'?'Card Payment':'Cash Payment'}</td><td style="text-align:right">$${total.toFixed(2)}</td></tr>
+</table>
+<hr>
+<p class="thanks">Thank you!</p>
+</body></html>`;
+
+  // PassPRNT URL scheme — opens Star PassPRNT app on iPad/iPhone,
+  // prints to the configured Star printer, then returns to the till.
+  // PassPRNT must be installed (free on App Store) and configured with
+  // the printer port (e.g. TCP:192.168.1.2 for LAN, or bt: for Bluetooth).
+  const passprntUrl = 'starpassprnt://v1/print/nopreview?'
+    + 'port=' + encodeURIComponent('TCP:192.168.1.2')
+    + 'back=' + encodeURIComponent(window.location.href)
+    + '&html=' + encodeURIComponent(receiptHtml)
+    + '&size=576';  // 72mm / 576 dots — correct for TSP100III
+
+  window.location.href = passprntUrl;
+}
+
+// ─── ADMIN ───────────────────────────────────────────────────────────────────
+function openAdmin() {
+  document.getElementById('admin-panel').classList.add('open');
+  document.getElementById('pin-screen').style.display = 'flex';
+  document.getElementById('admin-content').classList.remove('visible');
+  document.getElementById('pin-input').value = '';
+  document.getElementById('pin-error').textContent = '';
+}
+
+function closeAdmin() {
+  document.getElementById('admin-panel').classList.remove('open');
+}
+
+function checkPin(val) {
+  const currentPin = localStorage.getItem('admin_pin') || ADMIN_PIN;
+  if (val.length === 4) {
+    if (val === currentPin) {
+      document.getElementById('pin-screen').style.display = 'none';
+      document.getElementById('admin-content').classList.add('visible');
+      renderAdminItems();
+    } else {
+      document.getElementById('pin-error').textContent = 'Incorrect PIN';
+      document.getElementById('pin-input').value = '';
+    }
+  }
+}
+
+function renderAdminItems() {
+  const el = document.getElementById('admin-items-list');
+  const byTab = {};
+  TABS.forEach(t => byTab[t] = menu.filter(i => i.tab === t));
+  el.innerHTML = TABS.map(t => `
+    <div style="margin-bottom:20px">
+      <div class="subcat-label" style="margin-bottom:8px">${t}</div>
+      ${byTab[t].map(item => `
+        <div class="admin-item-row" id="arow-${item.id}">
+          <input class="ai-name" value="${item.name}" onchange="updateItem(${item.id},'name',this.value)">
+          <input class="ai-btn" value="${item.button_name}" onchange="updateItem(${item.id},'button_name',this.value)">
+          <input class="ai-price" type="number" step="0.10" value="${item.price}" onchange="updateItem(${item.id},'price',parseFloat(this.value))">
+          <button class="admin-del" onclick="deleteItem(${item.id})">Del</button>
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+function updateItem(id, field, val) {
+  const item = menu.find(i => i.id === id);
+  if (item) { item[field] = val; saveMenu(); renderMenu(); }
+}
+
+function deleteItem(id) {
+  if (!confirm('Delete this item?')) return;
+  menu = menu.filter(i => i.id !== id);
+  saveMenu(); renderAdminItems(); renderMenu();
+}
+
+function adminAddItem() {
+  const name = document.getElementById('ni-name').value.trim();
+  const btn = document.getElementById('ni-btn').value.trim();
+  const price = parseFloat(document.getElementById('ni-price').value);
+  const tab = document.getElementById('ni-tab').value;
+  const sub = document.getElementById('ni-sub').value.trim() || tab;
+  if (!name || !btn || isNaN(price)) { alert('Fill in all fields'); return; }
+  const newId = Math.max(...menu.map(i=>i.id)) + 1;
+  menu.push({ id:newId, name, button_name:btn, price, tab, subcategory:sub, has_mods: tab==='Coffee', active:true });
+  saveMenu(); renderAdminItems(); renderMenu();
+  ['ni-name','ni-btn','ni-price','ni-sub'].forEach(id => document.getElementById(id).value='');
+}
+
+function saveMenu() {
+  localStorage.setItem('sfizio_menu', JSON.stringify(menu));
+}
+
+function changePin() {
+  const np = document.getElementById('new-pin').value;
+  const cp = document.getElementById('confirm-pin').value;
+  const msg = document.getElementById('pin-change-msg');
+  if (np.length !== 4 || !/^\d{4}$/.test(np)) { msg.style.color='var(--red)'; msg.textContent='PIN must be 4 digits'; return; }
+  if (np !== cp) { msg.style.color='var(--red)'; msg.textContent='PINs do not match'; return; }
+  localStorage.setItem('admin_pin', np);
+  msg.style.color='var(--accent2)'; msg.textContent='PIN updated ✓';
+  document.getElementById('new-pin').value='';
+  document.getElementById('confirm-pin').value='';
+}
+
+function calcChange() {
+  const owed = orders[activeOrderIdx].items.reduce((s,i) => s+i.price, 0);
+  const given = parseFloat(document.getElementById('cash-given').value);
+  const el = document.getElementById('change-display');
+  if (isNaN(given) || given < owed) { el.textContent = given > 0 ? 'Not enough' : ''; el.style.color='var(--red)'; return; }
+  // Swedish rounding to nearest 10c
+  const raw = given - owed;
+  const rounded = Math.round(raw * 10) / 10;
+  el.style.color = 'var(--accent2)';
+  el.textContent = 'Change: $' + rounded.toFixed(2);
+}
+
+// ─── START ───────────────────────────────────────────────────────────────────
 init();
 </script>
 </body>
