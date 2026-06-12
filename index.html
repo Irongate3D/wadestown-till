@@ -584,8 +584,8 @@
         oninput="calcChange()">
       <div id="change-display" style="font-size:28px;min-height:40px"></div>
     </div>
-<div id="receipt-toggle-row" style="display:flex;align-items:center;justify-content:center;gap:12px;margin:8px 0 4px">
-      <span style="color:var(--text2);font-size:14px">Print Docket</span>
+    <div id="docket-toggle-row" style="display:flex;align-items:center;justify-content:center;gap:12px;margin:8px 0 4px">
+      <span style="color:var(--neon-cyan);font-size:14px">Print Docket</span>
       <label style="position:relative;display:inline-block;width:48px;height:26px">
         <input type="checkbox" id="docket-toggle" onchange="updateDocketSlider()" style="opacity:0;width:0;height:0" checked>
         <span id="docket-slider" style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#0ff;border-radius:26px;transition:.3s"></span>
@@ -593,7 +593,7 @@
       </label>
     </div>
     <div id="receipt-toggle-row" style="display:flex;align-items:center;justify-content:center;gap:12px;margin:4px 0 8px">
-      <span style="color:var(--text2);font-size:14px">Print Receipt</span>
+      <span style="color:var(--neon-cyan);font-size:14px">Print Receipt</span>
       <label style="position:relative;display:inline-block;width:48px;height:26px">
         <input type="checkbox" id="receipt-toggle" onchange="updateReceiptSlider()" style="opacity:0;width:0;height:0">
         <span id="receipt-slider" style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#3a3a4a;border-radius:26px;transition:.3s"></span>
@@ -628,6 +628,10 @@
   <div id="admin-content">
     <div style="padding:16px">
       <div class="admin-section">
+          <h3>Printer Test</h3>
+          <div style="margin-bottom:12px">
+            <button onclick="testPrinter()" style="background:var(--neon-pink);color:#000;border:none;border-radius:28px;padding:12px 24px;font-size:14px;font-weight:bold;cursor:pointer">TEST PRINTER</button>
+          </div>
           <h3>Change PIN</h3>
           <div id="printer-config" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:rgba(0,0,0,0.3);padding:10px;border-radius:28px;">
             <input type="password" id="new-pin" placeholder="New PIN" maxlength="4" inputmode="numeric" style="width:120px;">
@@ -763,10 +767,90 @@ function voidOrder() { if (!confirm('Void this order?')) return; orders[activeOr
 function openPayment(method) { const order = orders[activeOrderIdx]; const total = order.items.reduce((s,i) => s+i.price, 0); if (total === 0) return; payMethod = method; document.getElementById('pay-amount').textContent = '$' + total.toFixed(2); document.getElementById('pay-method-label').textContent = method === 'card' ? '💳 Card Payment' : '💵 Cash Payment'; document.getElementById('pay-instructions').textContent = method === 'card' ? 'Process on EFTPOS terminal, then tap Done.' : 'Collect cash, then tap Done.'; const cashCalc = document.getElementById('cash-calc'); cashCalc.style.display = method === 'cash' ? 'block' : 'none'; document.getElementById('cash-given').value = ''; document.getElementById('change-display').textContent = ''; const toggle = document.getElementById('receipt-toggle'); toggle.checked = false; updateReceiptSlider(); document.getElementById('pay-modal').classList.add('open'); }
 function updateDocketSlider() { const toggle = document.getElementById('docket-toggle'); const slider = document.getElementById('docket-slider'); const knob = document.getElementById('docket-knob'); if (toggle.checked) { slider.style.background = '#0ff'; knob.style.transform = 'translateX(22px)'; } else { slider.style.background = '#3a3a4a'; knob.style.transform = 'translateX(0)'; } }
 function updateReceiptSlider() { const toggle = document.getElementById('receipt-toggle'); const slider = document.getElementById('receipt-slider'); const knob = document.getElementById('receipt-knob'); if (toggle.checked) { slider.style.background = '#0ff'; knob.style.transform = 'translateX(22px)'; } else { slider.style.background = '#3a3a4a'; knob.style.transform = 'translateX(0)'; } }
-function completePay() { const order = orders[activeOrderIdx]; const total = order.items.reduce((s,i) => s+i.price, 0); const wantReceipt = document.getElementById('receipt-toggle').checked; const wantDocket = document.getElementById('docket-toggle').checked; if (wantDocket) printDocket(order); if (wantReceipt) printReceipt(order, total, payMethod); }
-function sendToPassPRNT(html) { const passprntUrl = 'starpassprnt://v1/print/nopreview?port=' + encodeURIComponent('TCP:192.168.1.2') + '&back=' + encodeURIComponent(window.location.href) + '&html=' + encodeURIComponent(html) + '&size=576'; window.location.href = passprntUrl; }
-function printDocket(order) { const TAB_ORDER = ['Coffee','Food','Cold Drinks','Freezer Meals','Catering & Misc']; const orderNum = Date.now().toString().slice(-6); let rows = ''; TAB_ORDER.forEach(tab => { const tabItems = order.items.filter(i => i.item.tab === tab); tabItems.forEach(i => { rows += `<tr><td>${i.item.button_name}</td></tr>`; if (i.mods.length) { i.mods.filter(m=>m.name).forEach(m => { rows += `<tr><td style="padding-left:10px;font-size:11px">+ ${m.name}</td></tr>`; }); } }); }); const docketHtml = `<html><head><meta name="format-detection" content="telephone=no"><style>body{font-family:monospace;font-size:14px;width:72mm;margin:0;padding:4px;}h2{font-size:18px;text-align:center;font-weight:bold;margin:2px 0;}hr{border:none;border-top:2px solid #000;margin:4px 0;}table{width:100%;border-collapse:collapse;}td{padding:2px 3px;}</style></head><body><hr><h2>ORDER #${orderNum}</h2><hr><table>${rows}</table><hr></body></html>`; sendToPassPRNT(docketHtml); }
-function printReceipt(order, total, method) { const gst = total * GST_RATE / (1 + GST_RATE); const now = new Date(); const dateStr = now.toLocaleDateString('en-NZ',{day:'2-digit',month:'short',year:'numeric'}) + ', ' + now.toLocaleTimeString('en-NZ',{hour:'2-digit',minute:'2-digit'}); const orderNum = Date.now().toString().slice(-6); let rows = ''; order.items.forEach(i => { rows += `<tr><td style="text-align:left">${i.item.button_name}</td><td style="text-align:right">$${i.price.toFixed(2)}</td></tr>`; if (i.mods.length) { i.mods.filter(m=>m.name).forEach(m => { rows += `<tr><td style="text-align:left;padding-left:12px;font-size:11px">${m.name}</td><td style="text-align:right;font-size:11px">${m.price>0?'+$'+m.price.toFixed(2):''}</td></tr>`; }); } }); const tabName = (order.name && order.name !== 'Tab 1') ? `<p>${order.name}</p>` : ''; const receiptHtml = `<html><head><meta name="format-detection" content="telephone=no"><style>body { font-family: monospace; font-size: 13px; width: 72mm; margin: 0; padding: 4px; } h2 { font-size: 14px; text-align: center; margin: 2px 0; } p { text-align: center; margin: 1px 0; font-size: 12px; } hr { border: none; border-top: 1px dashed #000; margin: 4px 0; } table { width: 100%; border-collapse: collapse; } td { padding: 1px 2px; } .total-row td { font-weight: bold; border-top: 1px dashed #000; padding-top: 3px; } .gst-row td { font-size: 11px; } .thanks { text-align: center; margin-top: 6px; font-size: 12px; }</style></head><body><h2>${BUSINESS.name}</h2><p>${BUSINESS.phone}</p><p>${BUSINESS.address}</p><p>GST ${BUSINESS.gst}</p><hr><p>${dateStr}</p><p>Order #${orderNum}</p>${tabName}<hr><table>${rows}<tr class="total-row"><td>Total</td><td style="text-align:right">$${total.toFixed(2)}</td></tr><tr class="gst-row"><td colspan="2" style="text-align:center">Includes GST of $${gst.toFixed(2)}</td></tr><tr><td>${method==='card'?'Card Payment':'Cash Payment'}</td><td style="text-align:right">$${total.toFixed(2)}</td></tr></table><hr><p class="thanks">Thank you!</p></body></html>`; sendToPassPRNT(receiptHtml); }
+function completePay() {
+  const order = orders[activeOrderIdx];
+  const total = order.items.reduce((s,i) => s+i.price, 0);
+  const wantReceipt = document.getElementById('receipt-toggle').checked;
+  const wantDocket = document.getElementById('docket-toggle').checked;
+
+  // DIAGNOSTIC MODE (Session 20): prevent dual PassPRNT launches while testing.
+  // Once printing is confirmed reliable, remove this block so both can fire normally
+  // (or implement a proper queued/sequential print if both are needed).
+  if (wantReceipt && wantDocket) {
+    alert("PassPRNT test mode:\n\nPlease enable ONLY Docket OR ONLY Receipt, not both, while testing.");
+    return;
+  }
+
+  if (wantDocket) printDocket(order);
+  if (wantReceipt) printReceipt(order, total, payMethod);
+
+  if (orders.length > 1) { orders.splice(activeOrderIdx, 1); activeOrderIdx = Math.max(0, activeOrderIdx - 1); } else { orders[0] = { id: Date.now(), name: 'Tab 1', items: [] }; activeOrderIdx = 0; }
+  document.getElementById('pay-modal').classList.remove('open');
+  renderOrderPanel();
+}
+
+function sendToPassPRNT(html) {
+  // DIAGNOSTIC MODE (Session 20): logs payload size and shows the URL before launching.
+  // Remove the console.log/alert lines once printing is confirmed working —
+  // otherwise every print (including normal dockets) will pop up this alert.
+  const htmlBytes = new Blob([html]).size;
+  console.log("PassPRNT chars:", html.length, "bytes:", htmlBytes);
+
+  const passprntUrl = 'starpassprnt://v1/print/nopreview'
+    + '?popup=enable'
+    + '&port=' + encodeURIComponent('TCP:192.168.1.2')
+    + '&back=' + encodeURIComponent(window.location.href)
+    + '&html=' + encodeURIComponent(html)
+    + '&size=576';
+
+  console.log(passprntUrl);
+  alert("PassPRNT Diagnostic\n\nChars: " + html.length + "\nBytes: " + htmlBytes);
+
+  window.location.href = passprntUrl;
+}
+
+function testPrinter() {
+  const html = `<html><body>HELLO WORLD<br>WADESTOWN TEST<br>1234567890</body></html>`;
+  sendToPassPRNT(html);
+}
+
+function printDocket(order) {
+  const TAB_ORDER = ['Coffee','Food','Cold Drinks','Freezer Meals','Catering & Misc'];
+  const orderNum = Date.now().toString().slice(-6);
+  let rows = '';
+  TAB_ORDER.forEach(tab => {
+    const tabItems = order.items.filter(i => i.item.tab === tab);
+    tabItems.forEach(i => {
+      rows += `<tr><td style="font-size:16px;font-family:monospace">${i.item.button_name}</td></tr>`;
+      if (i.mods.length) {
+        i.mods.filter(m=>m.name).forEach(m => {
+          rows += `<tr><td style="font-size:12px;font-family:monospace;padding-left:10px">+ ${m.name}</td></tr>`;
+        });
+      }
+    });
+  });
+  const docketHtml = `<html><body><table width="100%"><tr><td style="text-align:center;font-size:20px;font-family:monospace;font-weight:bold">ORDER #${orderNum}</td></tr>${rows}</table></body></html>`;
+  sendToPassPRNT(docketHtml);
+}
+
+function printReceipt(order, total, method) {
+  const gst = total * GST_RATE / (1 + GST_RATE);
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-NZ',{day:'2-digit',month:'short',year:'numeric'}) + ', ' + now.toLocaleTimeString('en-NZ',{hour:'2-digit',minute:'2-digit'});
+  const orderNum = Date.now().toString().slice(-6);
+  let rows = '';
+  order.items.forEach(i => {
+    rows += `<tr><td style="font-family:monospace;font-size:13px">${i.item.button_name}</td><td style="font-family:monospace;font-size:13px;text-align:right">$${i.price.toFixed(2)}</td></tr>`;
+    if (i.mods.length) {
+      i.mods.filter(m=>m.name).forEach(m => {
+        rows += `<tr><td style="font-family:monospace;font-size:11px;padding-left:12px">${m.name}</td><td style="font-family:monospace;font-size:11px;text-align:right">${m.price>0?'+$'+m.price.toFixed(2):''}</td></tr>`;
+      });
+    }
+  });
+  const tabName = (order.name && order.name !== 'Tab 1') ? `<tr><td colspan="2" style="text-align:center;font-family:monospace;font-size:12px">${order.name}</td></tr>` : '';
+  const receiptHtml = `<html><body><table width="100%"><tr><td colspan="2" style="text-align:center;font-family:monospace;font-size:14px;font-weight:bold">${BUSINESS.name}</td></tr><tr><td colspan="2" style="text-align:center;font-family:monospace;font-size:12px">${BUSINESS.phone}</td></tr><tr><td colspan="2" style="text-align:center;font-family:monospace;font-size:12px">${BUSINESS.address}</td></tr><tr><td colspan="2" style="text-align:center;font-family:monospace;font-size:12px">GST ${BUSINESS.gst}</td></tr><tr><td colspan="2" style="text-align:center;font-family:monospace;font-size:12px">${dateStr}</td></tr><tr><td colspan="2" style="text-align:center;font-family:monospace;font-size:12px">Order #${orderNum}</td></tr>${tabName}${rows}<tr><td style="font-family:monospace;font-size:13px;font-weight:bold">Total</td><td style="font-family:monospace;font-size:13px;font-weight:bold;text-align:right">$${total.toFixed(2)}</td></tr><tr><td colspan="2" style="text-align:center;font-family:monospace;font-size:11px">Includes GST of $${gst.toFixed(2)}</td></tr><tr><td style="font-family:monospace;font-size:13px">${method==='card'?'Card Payment':'Cash Payment'}</td><td style="font-family:monospace;font-size:13px;text-align:right">$${total.toFixed(2)}</td></tr><tr><td colspan="2" style="text-align:center;font-family:monospace;font-size:12px">Thank you!</td></tr></table></body></html>`;
+  sendToPassPRNT(receiptHtml);
+}
 function openAdmin() { document.getElementById('admin-panel').classList.add('open'); document.getElementById('pin-screen').style.display = 'flex'; document.getElementById('admin-content').classList.remove('visible'); document.getElementById('pin-input').value = ''; document.getElementById('pin-error').textContent = ''; }
 function closeAdmin() { document.getElementById('admin-panel').classList.remove('open'); }
 function checkPin(val) { const currentPin = localStorage.getItem('admin_pin') || ADMIN_PIN; if (val.length === 4) { if (val === currentPin) { document.getElementById('pin-screen').style.display = 'none'; document.getElementById('admin-content').classList.add('visible'); renderAdminItems(); } else { document.getElementById('pin-error').textContent = 'Incorrect PIN'; document.getElementById('pin-input').value = ''; } } }
