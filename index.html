@@ -817,38 +817,62 @@ function testPrinter() {
 function printDocket(order) {
   const TAB_ORDER = ['Coffee','Food','Cold Drinks','Freezer Meals','Catering & Misc'];
   const orderNum = Date.now().toString().slice(-6);
-  let rows = '';
+  let lines = '';
   TAB_ORDER.forEach(tab => {
     const tabItems = order.items.filter(i => i.item.tab === tab);
     tabItems.forEach(i => {
-      rows += `<tr><td style="font-size:16px;font-family:monospace">${i.item.button_name}</td></tr>`;
+      lines += i.item.button_name + '<br>';
       if (i.mods.length) {
         i.mods.filter(m=>m.name).forEach(m => {
-          rows += `<tr><td style="font-size:12px;font-family:monospace;padding-left:10px">+ ${m.name}</td></tr>`;
+          lines += '  + ' + m.name + '<br>';
         });
       }
     });
   });
-  const docketHtml = `<html><body><table width="100%"><tr><td style="text-align:center;font-size:20px;font-family:monospace;font-weight:bold">ORDER #${orderNum}</td></tr>${rows}</table></body></html>`;
+  const docketHtml = '<html><body>'
+    + '--------------------------------<br>'
+    + 'ORDER #' + orderNum + '<br>'
+    + '--------------------------------<br>'
+    + lines
+    + '--------------------------------<br>'
+    + '</body></html>';
   sendToPassPRNT(docketHtml);
 }
 
 function printReceipt(order, total, method) {
   const gst = total * GST_RATE / (1 + GST_RATE);
   const now = new Date();
-  const dateStr = now.toLocaleDateString('en-NZ',{day:'2-digit',month:'short',year:'numeric'}) + ', ' + now.toLocaleTimeString('en-NZ',{hour:'2-digit',minute:'2-digit'});
+  const dateStr = now.toLocaleDateString('en-NZ',{day:'2-digit',month:'short',year:'numeric'}) + ' ' + now.toLocaleTimeString('en-NZ',{hour:'2-digit',minute:'2-digit'});
   const orderNum = Date.now().toString().slice(-6);
-  let rows = '';
+  let lines = '';
   order.items.forEach(i => {
-    rows += `<tr><td style="font-family:monospace;font-size:13px">${i.item.button_name}</td><td style="font-family:monospace;font-size:13px;text-align:right">$${i.price.toFixed(2)}</td></tr>`;
+    const namePad = i.item.button_name.substring(0,20);
+    const price = '$' + i.price.toFixed(2);
+    lines += namePad + '  ' + price + '<br>';
     if (i.mods.length) {
       i.mods.filter(m=>m.name).forEach(m => {
-        rows += `<tr><td style="font-family:monospace;font-size:11px;padding-left:12px">${m.name}</td><td style="font-family:monospace;font-size:11px;text-align:right">${m.price>0?'+$'+m.price.toFixed(2):''}</td></tr>`;
+        lines += '  ' + m.name + (m.price>0?' +$'+m.price.toFixed(2):'') + '<br>';
       });
     }
   });
-  const tabName = (order.name && order.name !== 'Tab 1') ? `<tr><td colspan="2" style="text-align:center;font-family:monospace;font-size:12px">${order.name}</td></tr>` : '';
-  const receiptHtml = `<html><body><table width="100%"><tr><td colspan="2" style="text-align:center;font-family:monospace;font-size:14px;font-weight:bold">${BUSINESS.name}</td></tr><tr><td colspan="2" style="text-align:center;font-family:monospace;font-size:12px">${BUSINESS.phone}</td></tr><tr><td colspan="2" style="text-align:center;font-family:monospace;font-size:12px">${BUSINESS.address}</td></tr><tr><td colspan="2" style="text-align:center;font-family:monospace;font-size:12px">GST ${BUSINESS.gst}</td></tr><tr><td colspan="2" style="text-align:center;font-family:monospace;font-size:12px">${dateStr}</td></tr><tr><td colspan="2" style="text-align:center;font-family:monospace;font-size:12px">Order #${orderNum}</td></tr>${tabName}${rows}<tr><td style="font-family:monospace;font-size:13px;font-weight:bold">Total</td><td style="font-family:monospace;font-size:13px;font-weight:bold;text-align:right">$${total.toFixed(2)}</td></tr><tr><td colspan="2" style="text-align:center;font-family:monospace;font-size:11px">Includes GST of $${gst.toFixed(2)}</td></tr><tr><td style="font-family:monospace;font-size:13px">${method==='card'?'Card Payment':'Cash Payment'}</td><td style="font-family:monospace;font-size:13px;text-align:right">$${total.toFixed(2)}</td></tr><tr><td colspan="2" style="text-align:center;font-family:monospace;font-size:12px">Thank you!</td></tr></table></body></html>`;
+  const tabLine = (order.name && order.name !== 'Tab 1') ? order.name + '<br>' : '';
+  const receiptHtml = '<html><body>'
+    + BUSINESS.name + '<br>'
+    + BUSINESS.phone + '<br>'
+    + BUSINESS.address + '<br>'
+    + 'GST ' + BUSINESS.gst + '<br>'
+    + dateStr + '<br>'
+    + 'Order #' + orderNum + '<br>'
+    + tabLine
+    + '--------------------------------<br>'
+    + lines
+    + '--------------------------------<br>'
+    + 'TOTAL  $' + total.toFixed(2) + '<br>'
+    + 'Includes GST $' + gst.toFixed(2) + '<br>'
+    + (method==='card'?'Card Payment':'Cash Payment') + '<br>'
+    + '--------------------------------<br>'
+    + 'Thank you!<br>'
+    + '</body></html>';
   sendToPassPRNT(receiptHtml);
 }
 function openAdmin() { document.getElementById('admin-panel').classList.add('open'); document.getElementById('pin-screen').style.display = 'flex'; document.getElementById('admin-content').classList.remove('visible'); document.getElementById('pin-input').value = ''; document.getElementById('pin-error').textContent = ''; }
