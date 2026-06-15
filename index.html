@@ -816,25 +816,23 @@ function testPrinter() {
 
 function printDocket(order) {
   const TAB_ORDER = ['Coffee','Food','Cold Drinks','Freezer Meals','Catering & Misc'];
-  const orderNum = Date.now().toString().slice(-6);
+  const orderNum = Date.now().toString().slice(-4);
   let lines = '';
   TAB_ORDER.forEach(tab => {
     const tabItems = order.items.filter(i => i.item.tab === tab);
     tabItems.forEach(i => {
-      lines += i.item.button_name + '<br>';
+      lines += '<p style="font-size:26px;margin:6px 0;font-family:monospace">' + i.item.button_name + '</p>';
       if (i.mods.length) {
         i.mods.filter(m=>m.name).forEach(m => {
-          lines += '  + ' + m.name + '<br>';
+          lines += '<p style="font-size:20px;margin:2px 0 2px 12px;font-family:monospace">+ ' + m.name + '</p>';
         });
       }
     });
   });
   const docketHtml = '<html><body>'
-    + '--------------------------------<br>'
-    + 'ORDER #' + orderNum + '<br>'
-    + '--------------------------------<br>'
+    + '<p style="font-size:52px;font-weight:bold;text-align:center;margin:0;font-family:monospace">#' + orderNum + '</p>'
+    + '<p style="font-size:16px;margin:4px 0;font-family:monospace">------------------------</p>'
     + lines
-    + '--------------------------------<br>'
     + '</body></html>';
   sendToPassPRNT(docketHtml);
 }
